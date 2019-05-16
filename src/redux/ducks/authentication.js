@@ -1,22 +1,45 @@
 /**
- * Authentication Action Types
+ * @flow 
+ * @format
  */
-const types = {
-    FETCH: 'sao-jose/authentication/FETCH',
-    SUCCESS: 'sao-jose/authentication/SUCCESS',
-    FAILURE: 'sao-jose/authentication/FAILURE',
-    RESET: 'sao-jose/authentication/RESET'
-}
 
 /**
- * Authentication Initial State 
+ * Authentication Action Types
  */
-const initialState = {
+
+const types = {
+    FETCH: 'AUTHENTICATION/FETCH',
+    SUCCESS: 'AUTHENTICATION/SUCCESS',
+    FAILURE: 'AUTHENTICATION/FAILURE',
+    RESET: 'AUTHENTICATION/RESET'
+}
+
+type FetchAction = { type: typeof types.FETCH }
+type SuccessAction = { type: typeof types.SUCCESS, payload: Object }
+type FailureAction = { type: typeof types.FAILURE, payload: string }
+type ResetAction = { type: typeof types.RESET }
+type Action = FetchAction | SuccessAction | FailureAction | ResetAction;
+
+/**
+ * Authentication State 
+ */
+
+type State = {
+    fetch: boolean,
+    id: number,
+    email: string,
+    password: string,
+    token: string,
+    authorized: boolean,
+    error: string
+}
+
+let initialState: State = {
     fetch: false,
-    id: null,
-    email: null,
-    password: null,
-    token: null,
+    id: 0,
+    email: '',
+    password: '',
+    token: '',
     authorized: false,
     error: ''
 }
@@ -24,7 +47,8 @@ const initialState = {
 /**
  * Authentication Reducer 
  */
-export default (state = initialState, action) => {
+
+export default (state: State, action: Action): State => {
     switch (action.type) {
         case types.FETCH:
             return {
@@ -57,23 +81,25 @@ export default (state = initialState, action) => {
 /**
  * Authentication Action Creators Functions
  */
-export const fetchAuthentication = () => ({
+
+export const fetchAuthentication = (): FetchAction => ({
     type: types.FETCH
 })
 
-export const successAuthentication = payload => ({
+export const successAuthentication = (payload: Object): SuccessAction => ({
     type: types.SUCCESS, payload
 })
 
-export const failureAuthentication = payload => ({
+export const failureAuthentication = (payload: string): FailureAction => ({
     type: types.FAILURE, payload
 })
 
-export const resetAuthentication = () => ({
+export const resetAuthentication = (): ResetAction => ({
     type: types.RESET
 })
 
 /**
  * Authentication Side Effects Functions
  */
+
 export const checkAuthentication = () => { }
