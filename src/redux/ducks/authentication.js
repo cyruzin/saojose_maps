@@ -3,8 +3,10 @@
  * @format
  */
 
+import { httpAuthentication } from '../../util/request'
+
 /**
- * Authentication Action Types
+ * Authentication Action Types.
  */
 
 const types = {
@@ -21,12 +23,11 @@ type ResetAction = { type: typeof types.RESET }
 type Action = FetchAction | SuccessAction | FailureAction | ResetAction;
 
 /**
- * Authentication State 
+ * Authentication State.
  */
 
 type State = {
     fetch: boolean,
-    id: number,
     email: string,
     password: string,
     token: string,
@@ -36,7 +37,6 @@ type State = {
 
 let initialState: State = {
     fetch: false,
-    id: 0,
     email: '',
     password: '',
     token: '',
@@ -45,7 +45,7 @@ let initialState: State = {
 }
 
 /**
- * Authentication Reducer 
+ * Authentication Reducer.
  */
 
 export default (state: State, action: Action): State => {
@@ -59,9 +59,9 @@ export default (state: State, action: Action): State => {
             return {
                 ...state,
                 fetch: false,
-                id: action.payload.id,
-                email: action.payload.email,
-                token: action.payload.token,
+                email: '',
+                password: '',
+                token: action.payload.data,
                 authorized: true,
                 error: ''
             }
@@ -79,7 +79,7 @@ export default (state: State, action: Action): State => {
 }
 
 /**
- * Authentication Action Creators Functions
+ * Authentication Action Creators Functions.
  */
 
 export const fetchAuthentication = (): FetchAction => ({
@@ -99,7 +99,20 @@ export const resetAuthentication = (): ResetAction => ({
 })
 
 /**
- * Authentication Side Effects Functions
+ * Authentication Side Effects Types and Functions.
  */
 
-export const checkAuthentication = () => { }
+type GetState = () => State
+type PromiseAction = Promise<Action>
+type ThunkAction = (dispatch: Dispatch, getState: GetState) => any
+type Dispatch = (action: Action | ThunkAction | PromiseAction | Array<Action>) => any
+
+export const checkAuthentication = (credentials: Object): ThunkAction => dispatch => {
+    const { login, password } = credentials
+
+    dispatch(fetchAuthentication())
+
+    httpAuthentication({ login: login, password: password })
+        .then(response => dispatch(successAuthentication(response)))
+        .catch(error => dispatch(failureAuthentication(error)))
+}
