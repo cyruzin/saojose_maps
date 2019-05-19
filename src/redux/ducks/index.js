@@ -1,3 +1,7 @@
+/**
+ * @flow
+ */
+
 import { combineReducers } from 'redux'
 import Authentication from './authentication'
 

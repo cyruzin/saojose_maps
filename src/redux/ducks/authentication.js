@@ -48,7 +48,7 @@ let initialState: State = {
  * Authentication Reducer.
  */
 
-export default (state: State, action: Action): State => {
+export default (state: State = initialState, action: Action): State => {
     switch (action.type) {
         case types.FETCH:
             return {
@@ -107,7 +107,7 @@ type PromiseAction = Promise<Action>
 type ThunkAction = (dispatch: Dispatch, getState: GetState) => any
 type Dispatch = (action: Action | ThunkAction | PromiseAction | Array<Action>) => any
 
-export const checkAuthentication = (credentials: Object): ThunkAction => dispatch => {
+export const checkAuthentication = (credentials: Object): ThunkAction => (dispatch, state) => {
     const { login, password } = credentials
 
     dispatch(fetchAuthentication())
