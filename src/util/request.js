@@ -1,14 +1,16 @@
 import axios from 'axios'
+import { config } from './constants'
 
 /**
- * For authentication request.
+ * For authentication requests.
  */
+
 const authentication = axios.create({
-    baseURL: 'http://dev.gddoc.com.br/maps_sj/auth/user/senha',
+    baseURL: config.authentication.BASE_URL,
     method: 'POST',
     headers: {
         common: {
-            'Authorization': 'Basic 1cdef3b1a4d936ee05eff21a4da3e418d3bc76f9b287c42c3089eb7379c0'
+            'Authorization': `Basic ${config.authentication.TOKEN}`
         }
     }
 })
@@ -22,6 +24,7 @@ export const httpAuthentication = ({ data }) =>
 /**
  * For generic requests.
  */
+
 export const httpFetch = ({ url, method, data, params }) =>
     axios({ url, method, data, params })
         .then(response => response.data)

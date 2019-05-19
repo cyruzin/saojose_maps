@@ -5,7 +5,7 @@ import Login from '../../containers/Login/Login'
 export default () => (
     <Router>
         <Stack key='root'>
-            <Scene key='login' component={Login} initial />
+            <Scene key='login' component={Login} initial hideNavBar />
         </Stack>
     </Router>
 )
