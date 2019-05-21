@@ -15,7 +15,7 @@ const authentication = axios.create({
     }
 })
 
-export const httpAuthentication = ({ data }) =>
+export const httpAuthentication = data =>
     authentication({ data })
         .then(response => response.data)
         .catch(error => Promise.reject(error.response.data.message))

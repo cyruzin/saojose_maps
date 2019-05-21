@@ -9,13 +9,13 @@ import { TextInput as RNTextInput, StyleSheet } from 'react-native'
 type Props = {
     style?: Object,
     value?: string,
-    onChange: () => void
+    onChangeText: () => void
 }
 
 const TextInput = (props: Props) => (
     <RNTextInput
         style={[styles.border, props.style]}
-        onChange={props.onChange}
+        onChangeText={props.onChangeText}
         value={props.value}
         {...props} />
 )
