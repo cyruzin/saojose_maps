@@ -4,7 +4,7 @@
  */
 
 import React, { Component } from 'react'
-import { Text } from 'react-native'
+import { Text, StatusBar } from 'react-native'
 import { Provider } from 'react-redux'
 import store from './src/redux'
 import Router from './src/components/Router/Router'
@@ -17,6 +17,7 @@ export default class App extends Component<Props> {
     return (
       <Provider store={store}>
         <Container>
+          <StatusBar backgroundColor='#545454' />
           <Router />
         </Container>
       </Provider >

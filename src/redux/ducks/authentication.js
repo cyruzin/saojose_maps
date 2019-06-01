@@ -5,7 +5,6 @@
 
 import { httpAuthentication } from '../../util/request'
 
-
 /**
  * Authentication Action Types.
  */
@@ -108,7 +107,7 @@ type PromiseAction = Promise<Action>
 type ThunkAction = (dispatch: Dispatch, getState: GetState) => any
 type Dispatch = (action: Action | ThunkAction | PromiseAction | Array<Action>) => any
 
-export const checkAuthentication = (credentials: Object): ThunkAction => (dispatch, state) => {
+export const checkAuthentication = (credentials: Object): ThunkAction => dispatch => {
     dispatch(fetchAuthentication())
 
     httpAuthentication(credentials)
@@ -116,5 +115,8 @@ export const checkAuthentication = (credentials: Object): ThunkAction => (dispat
             console.log(response)
             dispatch(successAuthentication(response.data))
 
-        }).catch(error => dispatch(failureAuthentication(error)))
+        }).catch(error => {
+            console.log(error)
+            dispatch(failureAuthentication(error))
+        })
 }

@@ -4,7 +4,7 @@
  */
 
 import * as React from 'react'
-import { TextInput as RNTextInput, StyleSheet } from 'react-native'
+import { TextInput as RNTextInput } from 'react-native'
 
 type Props = {
     style?: Object,
@@ -14,17 +14,10 @@ type Props = {
 
 const TextInput = (props: Props) => (
     <RNTextInput
-        style={[styles.border, props.style]}
+        style={props.style}
         onChangeText={props.onChangeText}
         value={props.value}
         {...props} />
 )
-
-const styles = StyleSheet.create({
-    border: {
-        borderColor: '#000',
-        borderWidth: 1,
-    }
-})
 
 export default TextInput

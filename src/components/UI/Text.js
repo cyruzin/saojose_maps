@@ -12,7 +12,7 @@ type Props = {
 }
 
 const Text = (props: Props) => (
-    <RNText style={[props.style]}>
+    <RNText style={props.style} {...props}>
         {props.children}
     </RNText>
 )

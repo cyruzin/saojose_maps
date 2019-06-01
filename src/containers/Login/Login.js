@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Actions } from 'react-native-router-flux'
 import { checkAuthentication } from '../../redux/ducks/authentication'
-import { Container, TextInput, Button } from '../../components/UI'
+import { Container, TextInput, Button, Text } from '../../components/UI'
 
 class Login extends React.Component {
 
@@ -15,19 +15,38 @@ class Login extends React.Component {
 
     checkAuthentication = () => {
         let credentials = {
-            login: this.state.login,
-            password: this.state.password
+            login: this.state.login.trim(),
+            password: this.state.password.trim()
         }
         this.props.actions.checkAuthentication(credentials)
     }
 
     render() {
         return (
-            <Container>
-                <View style={styles.input}>
-                    <TextInput onChangeText={(login) => this.setState({ login })} />
-                    <TextInput onChangeText={(password) => this.setState({ password })} />
-                    <Button title='Login' onPress={() => this.checkAuthentication()} />
+            <Container style={styles.container}>
+                <View style={styles.inputBox}>
+                    <Text style={styles.title}>São José Mapas</Text>
+                    <TextInput
+                        onChangeText={(login) => this.setState({ login })}
+                        placeholder='Usuário'
+                        placeholderTextColor='#DCDCDC'
+                        selectionColor='#9ACD32'
+                        autoCapitalize='none'
+                        style={styles.input} />
+
+                    <TextInput
+                        onChangeText={(password) => this.setState({ password })}
+                        placeholder='Senha'
+                        placeholderTextColor='#DCDCDC'
+                        selectionColor='#9ACD32'
+                        secureTextEntry
+                        autoCapitalize='none'
+                        style={styles.input} />
+
+                    <Button
+                        title='LOGIN'
+                        onPress={() => this.checkAuthentication()}
+                        style={styles.button} />
                 </View>
             </Container>
         )
@@ -35,8 +54,34 @@ class Login extends React.Component {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        padding: 10,
+        backgroundColor: '#545454'
+    },
+    title: {
+        fontSize: 36,
+        opacity: 50,
+        fontWeight: 'bold',
+        color: '#fff',
+        textAlign: 'center',
+        marginBottom: 50
+    },
+    inputBox: {
+        flex: 1,
+        justifyContent: 'center',
+    },
     input: {
-        padding: 10
+        marginBottom: 20,
+        borderColor: '#9ACD32',
+        color: '#fff',
+        borderBottomWidth: 1,
+        borderBottomLeftRadius: 10,
+        borderBottomRightRadius: 10,
+        paddingLeft: 15,
+    },
+    button: {
+        marginTop: 30,
+        borderRadius: 50
     }
 })
 
