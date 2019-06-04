@@ -6,25 +6,17 @@ import { TOKEN, BASE_URL } from './constants'
  */
 
 const authentication = axios.create({
-    //baseURL: configuration.authentication.BASE_URL,
-
+    baseURL: BASE_URL,
+    method: 'POST',
+    headers: {
+        Authorization: `Basic ${TOKEN}`
+    }
 })
 
-export const httpAuthentication = credentials => {
-    async (params) => await (await fetch(params).json())
-    let config = {
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Basic 1cdef3b1a4d936ee05eff21a4da3e418d3bc76f9b287c42c3089eb7379c0"
-        }
-    }
-    return axios.post(BASE_URL, credentials, config)
-        .then(response => {
-            console.log(response.data)
-            response.data
-        })
+export const httpAuthentication = credentials =>
+    authentication({ data: credentials })
+        .then(response => response.data)
         .catch(error => Promise.reject(error.response))
-}
 
 /**
  * For generic requests.
@@ -34,4 +26,3 @@ export const httpFetch = ({ url, method, data, params }) =>
     axios({ url, method, data, params })
         .then(response => response.data)
         .catch(error => Promise.reject(error.response.data.message))
-

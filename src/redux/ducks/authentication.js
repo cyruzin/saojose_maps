@@ -3,7 +3,9 @@
  * @format
  */
 
+import axios from 'axios'
 import { httpAuthentication } from '../../util/request'
+
 
 /**
  * Authentication Action Types.
@@ -110,13 +112,7 @@ type Dispatch = (action: Action | ThunkAction | PromiseAction | Array<Action>) =
 export const checkAuthentication = (credentials: Object): ThunkAction => dispatch => {
     dispatch(fetchAuthentication())
 
-    httpAuthentication(credentials)
-        .then(response => {
-            console.log(response)
-            dispatch(successAuthentication(response.data))
-
-        }).catch(error => {
-            console.log(error)
-            dispatch(failureAuthentication(error))
-        })
+    return httpAuthentication(credentials)
+        .then(response => dispatch(successAuthentication(response.data)))
+        .catch(error => dispatch(failureAuthentication(error)))
 }
