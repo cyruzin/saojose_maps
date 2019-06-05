@@ -16,7 +16,7 @@ const authentication = axios.create({
 export const httpAuthentication = credentials =>
     authentication({ data: credentials })
         .then(response => response.data)
-        .catch(error => Promise.reject(error.response))
+        .catch(error => Promise.reject(error.response.data.data))
 
 /**
  * For generic requests.

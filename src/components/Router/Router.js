@@ -1,11 +1,13 @@
 import React from 'react'
-import { Router, Stack, Scene } from 'react-native-router-flux'
+import { Router, Scene } from 'react-native-router-flux'
 import Login from '../../containers/Login/Login'
+import Dashboard from '../../containers/Dashboard/Dashboard'
 
 export default () => (
     <Router>
-        <Stack key='root'>
+        <Scene key='root'>
             <Scene key='login' component={Login} initial hideNavBar />
-        </Stack>
+            <Scene key='dashboard' type='reset' component={Dashboard} hideNavBar />
+        </Scene>
     </Router>
 )
