@@ -26,6 +26,7 @@ class Login extends React.Component {
         return (
             <Container style={styles.container}>
                 {authorized && Actions.dashboard()}
+
                 <View style={styles.inputBox}>
                     <Text style={styles.title}>São José Mapas</Text>
                     {!!error && <Text style={styles.errorMsg}>{error}</Text>}
