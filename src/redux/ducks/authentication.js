@@ -30,8 +30,6 @@ type Action = FetchAction | SuccessAction | FailureAction | ResetAction;
 
 type State = {
     fetch: boolean,
-    email: string,
-    password: string,
     token: string,
     authorized: boolean,
     error: string
@@ -39,8 +37,6 @@ type State = {
 
 let initialState: State = {
     fetch: false,
-    email: '',
-    password: '',
     token: '',
     authorized: false,
     error: ''
@@ -61,9 +57,7 @@ export default (state: State = initialState, action: Action): State => {
             return {
                 ...state,
                 fetch: false,
-                email: '',
-                password: '',
-                token: action.payload.data,
+                token: action.payload,
                 authorized: true,
                 error: ''
             }
