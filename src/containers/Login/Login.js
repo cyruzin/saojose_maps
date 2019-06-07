@@ -26,11 +26,13 @@ class Login extends React.Component {
         const { authorized, error } = this.props.authentication
         return (
             <Container style={styles.container}>
-                {authorized && Actions.dashboard()}
+                {authorized && Actions.reset('drawerMenu')}
 
                 <View style={styles.inputBox}>
                     <Text style={styles.title}>São José Mapas</Text>
+
                     {!!error && <Text style={styles.errorMsg}>{error}</Text>}
+
                     <TextInput
                         onChangeText={(login) => this.setState({ login })}
                         placeholder='Usuário'

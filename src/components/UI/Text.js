@@ -17,10 +17,4 @@ const Text = (props: Props) => (
     </RNText>
 )
 
-// const styles = StyleSheet.create({
-//     text: {
-//         fontFamily: 'OpenSansCondensed-Light'
-//     }
-// })
-
 export default Text

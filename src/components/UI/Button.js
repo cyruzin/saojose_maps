@@ -5,6 +5,7 @@
 
 import * as React from 'react'
 import { TouchableHighlight, StyleSheet } from 'react-native'
+import { common } from '../../util/common'
 import { Text } from '../UI'
 
 type Props = {
@@ -14,7 +15,10 @@ type Props = {
 }
 
 const Button = (props: Props) => (
-    <TouchableHighlight onPress={props.onPress} style={[styles.button, props.style]} underlayColor='#DCDCDC'>
+    <TouchableHighlight
+        onPress={props.onPress}
+        style={[styles.button, props.style]}
+        underlayColor={common.colors.lightGray}>
         <Text style={styles.text}>{props.title}</Text>
     </TouchableHighlight>
 )
@@ -22,14 +26,14 @@ const Button = (props: Props) => (
 const styles = StyleSheet.create({
     button: {
         alignContent: 'center',
-        backgroundColor: '#9ACD32',
+        backgroundColor: common.colors.green,
         height: 50
     },
     text: {
         textAlign: 'center',
         fontSize: 16,
         marginTop: 15,
-        color: '#fff',
+        color: common.colors.white,
         fontWeight: 'bold'
     }
 })
