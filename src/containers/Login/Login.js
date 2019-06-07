@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Actions } from 'react-native-router-flux'
 import { checkAuthentication } from '../../redux/ducks/authentication'
+import { common } from '../../util/common'
 import { Container, TextInput, Button, Text } from '../../components/UI'
 
 class Login extends React.Component {
@@ -33,16 +34,16 @@ class Login extends React.Component {
                     <TextInput
                         onChangeText={(login) => this.setState({ login })}
                         placeholder='Usuário'
-                        placeholderTextColor='#DCDCDC'
-                        selectionColor='#9ACD32'
+                        placeholderTextColor={common.colors.lightGray}
+                        selectionColor={common.colors.green}
                         autoCapitalize='none'
                         style={styles.input} />
 
                     <TextInput
                         onChangeText={(password) => this.setState({ password })}
                         placeholder='Senha'
-                        placeholderTextColor='#DCDCDC'
-                        selectionColor='#9ACD32'
+                        placeholderTextColor={common.colors.lightGray}
+                        selectionColor={common.colors.green}
                         secureTextEntry
                         autoCapitalize='none'
                         style={styles.input} />
@@ -60,19 +61,19 @@ class Login extends React.Component {
 const styles = StyleSheet.create({
     container: {
         padding: 10,
-        backgroundColor: '#545454'
+        backgroundColor: common.colors.dark
     },
     title: {
         fontSize: 36,
         opacity: 50,
         fontWeight: 'bold',
-        color: '#fff',
+        color: common.colors.white,
         textAlign: 'center',
         marginBottom: 50
     },
     errorMsg: {
         marginBottom: 20,
-        color: '#FF0000',
+        color: common.colors.red,
         textAlign: 'center'
     },
     inputBox: {
@@ -81,8 +82,8 @@ const styles = StyleSheet.create({
     },
     input: {
         marginBottom: 20,
-        borderColor: '#9ACD32',
-        color: '#fff',
+        borderColor: common.colors.green,
+        color: common.colors.white,
         borderBottomWidth: 1,
         borderBottomLeftRadius: 10,
         borderBottomRightRadius: 10,
