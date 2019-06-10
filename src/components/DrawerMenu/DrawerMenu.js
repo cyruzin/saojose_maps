@@ -1,36 +1,43 @@
 import * as React from 'react'
 import { StyleSheet, TouchableWithoutFeedback } from 'react-native'
+import { useDispatch } from 'react-redux'
+import { resetAuthentication } from '../../redux/ducks/authentication'
 import { routeFix } from '../../util/helpers'
 import { common } from '../../util/common'
 import { Container, Text } from '../UI'
 
-const DrawerMenu = () => (
-    <Container style={styles.container}>
-        <TouchableWithoutFeedback
-            onPress={() => routeFix('dashboard')}
-            hitSlop={styles.textHitSlop}>
-            <Text style={styles.text}>Home</Text>
-        </TouchableWithoutFeedback>
 
-        <TouchableWithoutFeedback
-            onPress={() => console.log('Geolocalização')}
-            hitSlop={styles.textHitSlop}>
-            <Text style={styles.text}>Geolocalização</Text>
-        </TouchableWithoutFeedback>
+const DrawerMenu = () => {
+    const dispatch = useDispatch()
 
-        <TouchableWithoutFeedback
-            onPress={() => routeFix('coleta')}
-            hitSlop={styles.textHitSlop}>
-            <Text style={styles.text}>Coleta de Dados</Text>
-        </TouchableWithoutFeedback>
+    return (
+        <Container style={styles.container}>
+            <TouchableWithoutFeedback
+                onPress={() => routeFix('dashboard')}
+                hitSlop={styles.textHitSlop}>
+                <Text style={styles.text}>Home</Text>
+            </TouchableWithoutFeedback>
 
-        <TouchableWithoutFeedback
-            onPress={() => console.log('Logout')}
-            hitSlop={styles.textHitSlop}>
-            <Text style={styles.text}>Logout</Text>
-        </TouchableWithoutFeedback>
-    </Container>
-)
+            <TouchableWithoutFeedback
+                onPress={() => routeFix('geolocation')}
+                hitSlop={styles.textHitSlop}>
+                <Text style={styles.text}>Geolocalização</Text>
+            </TouchableWithoutFeedback>
+
+            <TouchableWithoutFeedback
+                onPress={() => routeFix('collect')}
+                hitSlop={styles.textHitSlop}>
+                <Text style={styles.text}>Coleta de Dados</Text>
+            </TouchableWithoutFeedback>
+
+            <TouchableWithoutFeedback
+                onPress={() => dispatch(resetAuthentication())}
+                hitSlop={styles.textHitSlop}>
+                <Text style={styles.text}>Logout</Text>
+            </TouchableWithoutFeedback>
+        </Container>
+    )
+}
 
 const styles = StyleSheet.create({
     container: {

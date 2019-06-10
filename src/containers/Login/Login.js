@@ -39,6 +39,10 @@ class Login extends React.Component<Props, State> {
         password: ''
     }
 
+    componentDidUpdate() {
+        if (this.props.authentication.authorized) Actions.reset('drawerMenu')
+    }
+
     checkAuthentication = () => {
         let credentials = {
             login: this.state.login.trim(),
@@ -51,7 +55,7 @@ class Login extends React.Component<Props, State> {
         const { authorized, error } = this.props.authentication
         return (
             <Container style={styles.container}>
-                {authorized && Actions.reset('drawerMenu')}
+                {/* {authorized && Actions.reset('drawerMenu')} */}
 
                 <View style={styles.inputBox}>
                     <Text style={styles.title}>São José Mapas</Text>

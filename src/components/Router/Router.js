@@ -4,7 +4,8 @@ import { common } from '../../util/common'
 import DrawerMenu from '../DrawerMenu/DrawerMenu'
 import Login from '../../containers/Login/Login'
 import Dashboard from '../../containers/Dashboard/Dashboard'
-import Coleta from '../../containers/Coleta/Coleta'
+import Collect from '../../containers/Collect/Collect'
+import GeoLocation from '../../containers/GeoLocation/GeoLocation'
 
 export default () => (
     <Router navigationBarStyle={{ backgroundColor: common.colors.dark }}>
@@ -19,7 +20,8 @@ export default () => (
                 hideNavBar>
                 <Scene key='home'>
                     <Scene key='dashboard' component={Dashboard} />
-                    <Scene key='coleta' component={Coleta} />
+                    <Scene key='collect' component={Collect} />
+                    <Scene key='geolocation' component={GeoLocation} />
                 </Scene>
             </Drawer>
         </Scene>

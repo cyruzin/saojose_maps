@@ -2,7 +2,7 @@ import * as React from 'react'
 import { StyleSheet } from 'react-native'
 import { Container, Text } from '../../components/UI'
 
-class Coleta extends React.Component {
+class Collect extends React.Component {
 
     render() {
 
@@ -18,4 +18,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default Coleta
+export default Collect
