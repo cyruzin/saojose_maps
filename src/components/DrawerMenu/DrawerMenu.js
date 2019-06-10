@@ -12,11 +12,22 @@ const DrawerMenu = () => (
             <Text style={styles.text}>Home</Text>
         </TouchableWithoutFeedback>
 
-        <Text style={styles.text}>Geolocalização</Text>
+        <TouchableWithoutFeedback
+            onPress={() => console.log('Geolocalização')}
+            hitSlop={styles.textHitSlop}>
+            <Text style={styles.text}>Geolocalização</Text>
+        </TouchableWithoutFeedback>
+
         <TouchableWithoutFeedback
             onPress={() => routeFix('coleta')}
             hitSlop={styles.textHitSlop}>
             <Text style={styles.text}>Coleta de Dados</Text>
+        </TouchableWithoutFeedback>
+
+        <TouchableWithoutFeedback
+            onPress={() => console.log('Logout')}
+            hitSlop={styles.textHitSlop}>
+            <Text style={styles.text}>Logout</Text>
         </TouchableWithoutFeedback>
     </Container>
 )

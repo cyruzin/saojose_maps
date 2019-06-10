@@ -3,7 +3,7 @@
  * @format
  */
 
-import * as React from 'react'
+import React from 'react'
 import { TextInput as RNTextInput } from 'react-native'
 
 type Props = {

@@ -3,7 +3,7 @@
  * @format
  */
 
-import * as React from 'react'
+import React from 'react'
 import { TouchableHighlight, StyleSheet } from 'react-native'
 import { common } from '../../util/common'
 import { Text } from '../UI'

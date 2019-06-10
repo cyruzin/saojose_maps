@@ -10,7 +10,6 @@ export default () => (
     <Router navigationBarStyle={{ backgroundColor: common.colors.dark }}>
         <Scene key='root'>
             <Scene key='login' component={Login} initial hideNavBar />
-
             <Drawer
                 key='drawerMenu'
                 renderTitle='São José Mapas'

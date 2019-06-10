@@ -1,4 +1,9 @@
-import * as React from 'react'
+/**
+ * @flow
+ * @format
+ */
+
+import React from 'react'
 import { StyleSheet, View, Alert } from 'react-native'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -7,7 +12,27 @@ import { checkAuthentication } from '../../redux/ducks/authentication'
 import { common } from '../../util/common'
 import { Container, TextInput, Button, Text } from '../../components/UI'
 
-class Login extends React.Component {
+type State = {
+    login: string,
+    password: string
+}
+
+type Props = {
+    authentication: {
+        authorized: boolean,
+        error: string
+    },
+    actions: {
+        checkAuthentication: (credentials: Credentials) => any
+    }
+}
+
+type Credentials = {
+    login: string,
+    password: string
+}
+
+class Login extends React.Component<Props, State> {
 
     state = {
         login: '',
@@ -107,4 +132,7 @@ const mapDispatchToProps = dispatch => ({
     }, dispatch)
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login)
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Login)
