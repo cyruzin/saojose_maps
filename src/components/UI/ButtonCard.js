@@ -3,38 +3,35 @@
  * @format
  */
 
-import React from 'react'
+import * as React from 'react'
 import { TouchableHighlight, StyleSheet } from 'react-native'
 import { common } from '../../util/common'
-import { Text, Container } from '../UI'
+import { Container } from '../UI'
 
 type Props = {
-    title: string,
     style?: Object,
+    children?: React.Node,
     onPress: () => void
 }
 
 const ButtonCard = (props: Props) => (
     <TouchableHighlight
         onPress={props.onPress}
-        style={[styles.button, props.style]}
+        style={{ ...props.style, ...styles.card }}
         underlayColor={common.colors.lightGray}>
-        <Text style={styles.text}>{props.title}</Text>
+        <Container>
+            {props.children}
+        </Container>
     </TouchableHighlight>
 )
 
 const styles = StyleSheet.create({
-    button: {
+    card: {
         alignContent: 'center',
         backgroundColor: common.colors.green,
-        height: 50
-    },
-    text: {
-        textAlign: 'center',
-        fontSize: 16,
-        marginTop: 15,
-        color: common.colors.white,
-        fontWeight: 'bold'
+        height: 170,
+        justifyContent: 'center',
+        borderRadius: 5
     }
 })
 
