@@ -12,7 +12,6 @@ class Collect extends React.Component {
             <Container style={styles.container}>
                 <ButtonCard
                     title='Coletar Ponto'
-                    style={styles.card}
                     onPress={() => console.log('Coletar Ponto')}>
                     <Container style={styles.cardContent}>
                         <Icon
@@ -26,7 +25,6 @@ class Collect extends React.Component {
 
                 <ButtonCard
                     title='Coletar Área'
-                    style={styles.card}
                     onPress={() => console.log('Coletar Área')}>
                     <Container style={styles.cardContent}>
                         <Icon
@@ -40,7 +38,6 @@ class Collect extends React.Component {
 
                 <ButtonCard
                     title='Listar Coletas'
-                    style={styles.card}
                     onPress={() => console.log('Listar Coletas')}>
                     <Container style={styles.cardContent}>
                         <Icon
@@ -61,9 +58,6 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: common.colors.dark,
         justifyContent: 'space-around'
-    },
-    card: {
-        marginBottom: 30
     },
     cardContent: {
         justifyContent: 'center'
