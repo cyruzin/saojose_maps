@@ -1,13 +1,14 @@
-import * as React from 'react'
+import React from 'react'
 import { StyleSheet } from 'react-native'
 import { common } from '../../util/common'
+import { httpFetch } from '../../util/request'
+import { routeFix } from '../../util/helpers'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { Container, Text, ButtonCard } from '../../components/UI'
 
 class Collect extends React.Component {
 
-    render() {
-
+    render () {
         return (
             <Container style={styles.container}>
                 <ButtonCard
@@ -38,7 +39,7 @@ class Collect extends React.Component {
 
                 <ButtonCard
                     title='Listar Coletas'
-                    onPress={() => console.log('Listar Coletas')}>
+                    onPress={() => routeFix('collectList')}>
                     <Container style={styles.cardContent}>
                         <Icon
                             name='list'
@@ -72,6 +73,6 @@ const styles = StyleSheet.create({
     icon: {
         textAlign: 'center'
     }
-});
+})
 
 export default Collect

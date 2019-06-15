@@ -4,13 +4,18 @@
  */
 
 import React from 'react'
-import { StyleSheet, View, Alert } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Actions } from 'react-native-router-flux'
 import { checkAuthentication } from '../../redux/ducks/authentication'
 import { common } from '../../util/common'
 import { Container, TextInput, Button, Text } from '../../components/UI'
+
+type Credentials = {
+    login: string,
+    password: string
+}
 
 type State = {
     login: string,
@@ -27,11 +32,6 @@ type Props = {
     }
 }
 
-type Credentials = {
-    login: string,
-    password: string
-}
-
 class Login extends React.Component<Props, State> {
 
     state = {
@@ -39,7 +39,7 @@ class Login extends React.Component<Props, State> {
         password: ''
     }
 
-    componentDidUpdate() {
+    componentDidUpdate () {
         if (this.props.authentication.authorized) Actions.reset('drawerMenu')
     }
 
@@ -51,12 +51,10 @@ class Login extends React.Component<Props, State> {
         this.props.actions.checkAuthentication(credentials)
     }
 
-    render() {
+    render () {
         const { authorized, error } = this.props.authentication
         return (
             <Container style={styles.container}>
-                {/* {authorized && Actions.reset('drawerMenu')} */}
-
                 <View style={styles.inputBox}>
                     <Text style={styles.title}>São José Mapas</Text>
 

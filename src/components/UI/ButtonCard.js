@@ -6,7 +6,6 @@
 import * as React from 'react'
 import { TouchableHighlight, StyleSheet } from 'react-native'
 import { common } from '../../util/common'
-import { Container } from '../UI'
 
 type Props = {
     style?: Object,
@@ -19,9 +18,7 @@ const ButtonCard = (props: Props) => (
         onPress={props.onPress}
         style={{ ...props.style, ...styles.card }}
         underlayColor={common.colors.lightGray}>
-        <Container>
-            {props.children}
-        </Container>
+        {props.children}
     </TouchableHighlight>
 )
 
