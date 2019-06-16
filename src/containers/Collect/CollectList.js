@@ -4,12 +4,13 @@
  */
 
 import React from 'react'
-import { StyleSheet, ScrollView } from 'react-native'
+import { StyleSheet, ScrollView, ActivityIndicator } from 'react-native'
 import { common } from '../../util/common'
 import { httpFetch } from '../../util/request'
 import { Container, Text } from '../../components/UI'
 
 type State = {
+    fetch: boolean,
     data: [{
         id: number | string,
         classificacao: string,
@@ -32,6 +33,7 @@ type State = {
 class CollectList extends React.Component<{}, State> {
 
     state = {
+        fetch: false,
         data: [{
             id: '',
             classificacao: '',
@@ -52,20 +54,30 @@ class CollectList extends React.Component<{}, State> {
     }
 
     componentDidMount () {
+        this.setState({ fetch: true })
+
         httpFetch({ url: '/coleta', method: 'GET' })
-            .then(response => this.setState({ data: response.data }))
-            .catch(error => this.setState({ error: error }))
+            .then(response => this.setState({ data: response.data, fetch: false }))
+            .catch(error => this.setState({ error: error, fetch: false }))
     }
 
     render () {
+        const { fetch, data, error } = this.state
+
         return (
             <Container style={styles.container}>
                 <ScrollView>
-                    {this.state.data.map(list => {
+                    {fetch && <ActivityIndicator color={common.colors.white} />}
+
+                    {!fetch && error !== '' && <Text style={styles.errorMsg}>{error}</Text>}
+
+                    {!fetch && error === '' && data.map(list => {
                         return (
                             <Container key={list.id} style={styles.content}>
-                                <Text style={styles.title}>Coleta #{list.id}</Text>
-                                <Container>
+                                <Container style={styles.titleBox}>
+                                    <Text style={styles.title}>Coleta #{list.id}</Text>
+                                </Container>
+                                <Container style={styles.textBox}>
                                     <Text style={styles.text}>
                                         Classificação: {list.classificacao}
                                     </Text>
@@ -123,15 +135,30 @@ const styles = StyleSheet.create({
     content: {
         marginBottom: 10
     },
+    titleBox: {
+        backgroundColor: common.colors.green
+    },
     title: {
         fontSize: 18,
-        marginBottom: 10,
+        fontWeight: 'bold',
+        padding: 10,
         color: common.colors.white
+    },
+    textBox: {
+        padding: 10,
+        borderBottomWidth: 1,
+        borderLeftWidth: 1,
+        borderRightWidth: 1,
+        borderColor: common.colors.white
     },
     text: {
         marginBottom: 5,
         color: common.colors.white
-    }
+    },
+    errorMsg: {
+        color: common.colors.red,
+        textAlign: 'center'
+    },
 })
 
 export default CollectList
