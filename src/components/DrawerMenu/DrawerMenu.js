@@ -1,6 +1,7 @@
 import * as React from 'react'
-import { StyleSheet, TouchableWithoutFeedback } from 'react-native'
+import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
 import { useDispatch } from 'react-redux'
+import Icon from 'react-native-vector-icons/FontAwesome'
 import { resetAuthentication } from '../../redux/ducks/authentication'
 import { routeFix } from '../../util/helpers'
 import { common } from '../../util/common'
@@ -15,25 +16,53 @@ const DrawerMenu = () => {
             <TouchableWithoutFeedback
                 onPress={() => routeFix('dashboard')}
                 hitSlop={styles.textHitSlop}>
-                <Text style={styles.text}>Home</Text>
+                <View style={styles.textContainer}>
+                    <Icon
+                        style={styles.icon}
+                        name='home'
+                        size={20}
+                        color={common.colors.white} />
+                    <Text style={styles.text}>Home</Text>
+                </View>
             </TouchableWithoutFeedback>
 
             <TouchableWithoutFeedback
                 onPress={() => routeFix('geolocation')}
                 hitSlop={styles.textHitSlop}>
-                <Text style={styles.text}>Geolocalização</Text>
+                <View style={styles.textContainer}>
+                    <Icon
+                        style={styles.icon}
+                        name='map-marker'
+                        size={20}
+                        color={common.colors.white} />
+                    <Text style={styles.text}>Geolocalização</Text>
+                </View>
             </TouchableWithoutFeedback>
 
             <TouchableWithoutFeedback
                 onPress={() => routeFix('collect')}
                 hitSlop={styles.textHitSlop}>
-                <Text style={styles.text}>Coleta de Dados</Text>
+                <View style={styles.textContainer}>
+                    <Icon
+                        style={styles.icon}
+                        name='map-pin'
+                        size={20}
+                        color={common.colors.white} />
+                    <Text style={styles.text}>Coleta de Dados</Text>
+                </View>
             </TouchableWithoutFeedback>
 
             <TouchableWithoutFeedback
                 onPress={() => dispatch(resetAuthentication())}
                 hitSlop={styles.textHitSlop}>
-                <Text style={styles.text}>Logout</Text>
+                <View style={styles.textContainer}>
+                    <Icon
+                        style={styles.icon}
+                        name='sign-out'
+                        size={20}
+                        color={common.colors.white} />
+                    <Text style={styles.text}>Logout</Text>
+                </View>
             </TouchableWithoutFeedback>
         </Container>
     )
@@ -44,9 +73,13 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: common.colors.dark
     },
+    textContainer: {
+        flexDirection: 'row',
+    },
     text: {
         fontSize: 18,
         color: common.colors.white,
+        marginLeft: 10,
         marginBottom: 30
     },
     textHitSlop: {
