@@ -1,32 +1,77 @@
+/**
+ * @flow 
+ * @format
+ */
+
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { StyleSheet } from 'react-native'
 import { Actions } from 'react-native-router-flux'
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
+import { common } from '../../util/common'
 import { Container, Text } from '../../components/UI'
 
-class Dashboard extends React.Component {
 
-    componentDidMount() {
+type State = {
+    latitude: number,
+    longitude: number,
+    error: string
+}
+
+class Dashboard extends React.Component<{}, State> {
+
+    state = {
+        latitude: 37.78825,
+        longitude: -122.4324,
+        error: ''
+    }
+
+    componentDidMount () {
+        if (!this.props.authorized) Actions.reset('login')
+
+        navigator.geolocation.getCurrentPosition(position => {
+            this.setState({
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                error: ''
+            })
+        },
+            error => this.setState({ error: error.message }),
+            { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 },
+        )
+    }
+
+    componentDidUpdate () {
         if (!this.props.authorized) Actions.reset('login')
     }
 
-    componentDidUpdate() {
-        if (!this.props.authorized) Actions.reset('login')
-    }
+    render () {
+        const { latitude, longitude, error } = this.state
 
-    render() {
         return (
             <MapView
                 style={styles.container}
                 provider={PROVIDER_GOOGLE}
                 style={styles.map}
+                loadingIndicatorColor={common.colors.green}
+                loadingEnabled
+                showsUserLocation
+                showsBuildings={false}
+                showsPointsOfInterest={false}
+                scrollEnabled={false}
+                zoomControlEnabled={false}
                 region={{
-                    latitude: -6.270565,
-                    longitude: 106.759550,
-                    latitudeDelta: 1,
-                    longitudeDelta: 1
+                    latitude,
+                    longitude,
+                    latitudeDelta: 0.0042,
+                    longitudeDelta: 0.0031
                 }}>
+                <Marker
+                    coordinate={{
+                        latitude,
+                        longitude
+                    }}
+                />
             </MapView>
         )
     }
