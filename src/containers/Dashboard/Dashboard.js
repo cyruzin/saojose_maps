@@ -9,7 +9,7 @@ import { StyleSheet } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
 import { common } from '../../util/common'
-import { Container, Text } from '../../components/UI'
+import { Container, Text, Alert } from '../../components/UI'
 
 
 type State = {
@@ -49,30 +49,34 @@ class Dashboard extends React.Component<{}, State> {
         const { latitude, longitude, error } = this.state
 
         return (
-            <MapView
-                style={styles.container}
-                provider={PROVIDER_GOOGLE}
-                style={styles.map}
-                loadingIndicatorColor={common.colors.green}
-                loadingEnabled
-                showsUserLocation
-                showsBuildings={false}
-                showsPointsOfInterest={false}
-                scrollEnabled={false}
-                zoomControlEnabled={false}
-                region={{
-                    latitude,
-                    longitude,
-                    latitudeDelta: 0.0042,
-                    longitudeDelta: 0.0031
-                }}>
-                <Marker
-                    coordinate={{
+            <>
+                {error !== '' && <Alert color={common.colors.red} msg={error} />}
+
+                {error === '' && <MapView
+                    style={styles.container}
+                    provider={PROVIDER_GOOGLE}
+                    style={styles.map}
+                    loadingIndicatorColor={common.colors.green}
+                    loadingEnabled
+                    showsUserLocation
+                    showsBuildings={false}
+                    showsPointsOfInterest={false}
+                    scrollEnabled={false}
+                    zoomControlEnabled={false}
+                    region={{
                         latitude,
-                        longitude
-                    }}
-                />
-            </MapView>
+                        longitude,
+                        latitudeDelta: 0.0042,
+                        longitudeDelta: 0.0031
+                    }}>
+                    <Marker
+                        coordinate={{
+                            latitude,
+                            longitude
+                        }}
+                    />
+                </MapView>}
+            </>
         )
     }
 }
