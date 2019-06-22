@@ -1,5 +1,6 @@
 import React from 'react'
 import { StyleSheet } from 'react-native'
+import { Actions } from 'react-native-router-flux'
 import { common } from '../../util/common'
 import { httpFetch } from '../../util/request'
 import { routeFix } from '../../util/helpers'
@@ -13,7 +14,7 @@ class Collect extends React.Component {
             <Container style={styles.container}>
                 <ButtonCard
                     title='Coletar Ponto'
-                    onPress={() => console.log('Coletar Ponto')}>
+                    onPress={() => Actions.replace('collectPoint')}>
                     <Container style={styles.cardContent}>
                         <Icon
                             name='map-pin'

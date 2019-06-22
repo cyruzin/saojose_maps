@@ -3,7 +3,6 @@
  * @format
  */
 
-import axios from 'axios'
 import { httpAuthentication } from '../../util/request'
 
 
