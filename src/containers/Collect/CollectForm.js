@@ -47,9 +47,9 @@ const styles = StyleSheet.create({
         color: common.colors.white,
         fontSize: 18,
         marginTop: 10,
-        marginBottom: 10,
-        fontWeight: 'bold',
-        textAlign: 'center'
+        marginLeft: 10,
+        marginBottom: 20,
+        fontWeight: 'bold'
     },
     input: {
         marginBottom: 20,
