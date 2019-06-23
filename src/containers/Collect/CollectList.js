@@ -7,7 +7,7 @@ import React from 'react'
 import { StyleSheet, ScrollView, ActivityIndicator } from 'react-native'
 import { common } from '../../util/common'
 import { httpFetch } from '../../util/request'
-import { Container, Text } from '../../components/UI'
+import { Container, Text, Alert } from '../../components/UI'
 
 type State = {
     fetch: boolean,
@@ -63,13 +63,14 @@ class CollectList extends React.Component<{}, State> {
 
     render () {
         const { fetch, data, error } = this.state
+        const empty = '-'
 
         return (
             <Container style={styles.container}>
                 <ScrollView>
                     {fetch && <ActivityIndicator color={common.colors.white} />}
 
-                    {!fetch && error !== '' && <Text style={styles.errorMsg}>{error}</Text>}
+                    {!fetch && error !== '' && <Alert color={common.colors.red} msg={error} />}
 
                     {!fetch && error === '' && data.map(list => {
                         return (
@@ -79,43 +80,43 @@ class CollectList extends React.Component<{}, State> {
                                 </Container>
                                 <Container style={styles.textBox}>
                                     <Text style={styles.text}>
-                                        Classificação: {list.classificacao}
+                                        Classificação: {list.classificacao || empty}
                                     </Text>
                                     <Text style={styles.text}>
-                                        Uso Solo: {list.uso_solo}
+                                        Uso Solo: {list.uso_solo || empty}
                                     </Text>
                                     <Text style={styles.text}>
-                                        Imovel: {list.imovel}
+                                        Imovel: {list.imovel || empty}
                                     </Text>
                                     <Text style={styles.text}>
-                                        Área HA: {list.area_ha}
+                                        Área HA: {list.area_ha || empty}
                                     </Text>
                                     <Text style={styles.text}>
-                                        Bloco: {list.bloco}
+                                        Bloco: {list.bloco || empty}
                                     </Text>
                                     <Text style={styles.text}>
-                                        Latitude: {list.latitude}
+                                        Latitude: {list.latitude || empty}
                                     </Text>
                                     <Text style={styles.text}>
-                                        Longitude: {list.longitude}
+                                        Longitude: {list.longitude || empty}
                                     </Text>
                                     <Text style={styles.text}>
-                                        Descrição: {list.descricao ? list.descricao : 'Não disponível'}
+                                        Descrição: {list.descricao || empty}
                                     </Text>
                                     <Text style={styles.text}>
-                                        ID USR Coleta: {list.id_usr_coleta}
+                                        ID USR Coleta: {list.id_usr_coleta || empty}
                                     </Text>
                                     <Text style={styles.text}>
-                                        ID Departamento: {list.id_departamento}
+                                        ID Departamento: {list.id_departamento || empty}
                                     </Text>
                                     <Text style={styles.text}>
-                                        ID Pendência: {list.id_pendencia}
+                                        ID Pendência: {list.id_pendencia || empty}
                                     </Text>
                                     <Text style={styles.text}>
-                                        ID Tipo: {list.id_tipo}
+                                        ID Tipo: {list.id_tipo || empty}
                                     </Text>
                                     <Text style={styles.text}>
-                                        Data: {list.dt_cadastro}
+                                        Data: {list.dt_cadastro || empty}
                                     </Text>
                                 </Container>
                             </Container>
@@ -154,11 +155,7 @@ const styles = StyleSheet.create({
     text: {
         marginBottom: 5,
         color: common.colors.white
-    },
-    errorMsg: {
-        color: common.colors.red,
-        textAlign: 'center'
-    },
+    }
 })
 
 export default CollectList

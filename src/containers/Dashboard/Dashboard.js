@@ -18,7 +18,11 @@ type State = {
     error: string
 }
 
-class Dashboard extends React.Component<{}, State> {
+type Props = {
+    authorized: bool
+}
+
+class Dashboard extends React.Component<Props, State> {
 
     state = {
         latitude: 37.78825,

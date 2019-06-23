@@ -1,13 +1,33 @@
-import * as React from 'react'
+/**
+ * @flow 
+ * @format
+ */
+
+import React from 'react'
 import { StyleSheet, Picker, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions } from 'react-native-router-flux'
 import { common } from '../../util/common'
 import { httpFetch } from '../../util/request'
 import jwtDecode from 'jwt-decode'
-import { Container, Text, TextInput, Button } from '../../components/UI'
+import { Container, Text, TextInput, Button, Alert } from '../../components/UI'
 
-class CollectForm extends React.Component {
+type State = {
+    fetch: boolean,
+    coletaDepartamento: Array<Object>,
+    departamentoID: number | string,
+    coletaTipo: Array<Object>,
+    tipoID: number | string,
+    error: string
+}
+
+type Props = {
+    latitude: string,
+    longitude: string,
+    token: string
+}
+
+class CollectForm extends React.Component<Props, State> {
 
     state = {
         fetch: false,
@@ -37,6 +57,8 @@ class CollectForm extends React.Component {
         const { latitude, longitude, token } = this.props
         let user = jwtDecode(token)
 
+        if (departamentoID === '' || tipoID === '') return
+
         httpFetch({
             method: 'POST',
             url: '/coleta',
@@ -59,11 +81,11 @@ class CollectForm extends React.Component {
         return (
             <Container style={styles.container}>
 
-                {fetch && !error && <ActivityIndicator style={styles.activityIndicator} color={common.colors.white} />}
+                {fetch && error === '' && <ActivityIndicator style={styles.activityIndicator} color={common.colors.white} />}
 
-                {!fetch && !!error && <Text styles={{ color: 'red' }}>{error}</Text>}
+                {!fetch && error !== '' && <Alert color={common.colors.red} msg={error} />}
 
-                {!fetch && !error &&
+                {!fetch && error === '' &&
                     <>
                         <Text style={styles.text}>Coleta de Ponto</Text>
 

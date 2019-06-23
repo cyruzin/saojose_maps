@@ -7,6 +7,7 @@ import * as React from 'react'
 import { StyleSheet } from 'react-native'
 import { common } from '../../util/common'
 import Container from '../UI/Container'
+import Text from '../UI/Text'
 
 type Props = {
     msg: string,
@@ -26,10 +27,10 @@ const Alert = (props: Props) => {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        bottom: 0,
-        left: 5,
-        borderRadius: 5,
-        padding: 10
+        top: 10,
+        right: 5,
+        padding: 10,
+        zIndex: 3
     },
     text: {
         color: common.colors.white
