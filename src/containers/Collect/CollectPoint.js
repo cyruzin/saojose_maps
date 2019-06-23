@@ -72,9 +72,11 @@ class CollectPoint extends React.Component<{}, State> {
                                 }}
                             />
                         </MapView>
-                        <FloatButton
-                            icon='plus'
-                            onPress={() => routeFix('collectForm', this.state)} />
+                        {latitude !== 37.78825 &&
+                            <FloatButton
+                                icon='plus'
+                                onPress={() => routeFix('collectForm', this.state)} />
+                        }
                     </>
                 }
             </>

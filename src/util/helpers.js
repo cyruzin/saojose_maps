@@ -15,3 +15,19 @@ export const routeFix = (sceneKey, props = {}) => {
     }
     Actions.push(sceneKey, props)
 }
+
+/**
+ * Close the application if it is in the root scene.
+ * This is a workaround.
+ * 
+ * @function onBackPress
+ * @returns {bool} 
+ * 
+ */
+export const onBackPress = () => {
+    if (Actions.state.index === 0) {
+        return false
+    }
+    Actions.pop()
+    return true
+}

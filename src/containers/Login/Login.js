@@ -39,6 +39,10 @@ class Login extends React.Component<Props, State> {
         password: ''
     }
 
+    componentDidMount () {
+        if (this.props.authentication.authorized) Actions.reset('drawerMenu')
+    }
+
     componentDidUpdate () {
         if (this.props.authentication.authorized) Actions.reset('drawerMenu')
     }
