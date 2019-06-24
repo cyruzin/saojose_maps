@@ -33,12 +33,18 @@ export const onBackPress = () => {
     return true
 }
 
-export const loadState = async () => {
-    const value = await AsyncStorage.getItem('token')
-    if (value !== null) {
-        const userData = JSON.parse(value)
-        if (userData.authorized) Actions.reset('drawerMenu')
-    }
+export const loadState = () => {
+    AsyncStorage.getItem('token')
+        .then(value => {
+            if (value !== null) {
+                const data = JSON.parse(value)
+                if (data.userData.expires < new Date().getTime() / 1000) {
+                    clearState()
+                    return false
+                }
+                if (data.authorized) Actions.reset('drawerMenu')
+            }
+        })
 }
 
 export const clearState = async () => await AsyncStorage.removeItem('token')

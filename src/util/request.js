@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { AUTH_TOKEN, AUTH_URL, BASE_URL } from './constants'
-import store from '../redux'
+import AsyncStorage from '@react-native-community/async-storage'
 
 /**
  * For authentication requests.
@@ -31,9 +31,17 @@ const maps = axios.create({
  * Setting headers.
  */
 
-maps.interceptors.request.use(config => {
-    config.headers.Authorization = 'Bearer ' + store.getState().authentication.token
-    return config
+maps.interceptors.request.use(response => {
+    AsyncStorage.getItem('token')
+        .then(value => {
+            if (value !== null) {
+                const userData = JSON.parse(value)
+                response.headers.Authorization = 'Bearer ' + userData.token
+                return response
+            }
+        })
+
+    return response
 })
 
 export const httpFetch = ({ url, method, data, params }) =>
