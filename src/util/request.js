@@ -44,6 +44,13 @@ maps.interceptors.request.use(response => {
     return response
 })
 
+maps.interceptors.response.use(response => {
+    return response
+}, error => {
+    console.log(error.response)
+    return Promise.reject(error)
+})
+
 export const httpFetch = ({ url, method, data, params }) =>
     maps({ url, method, data, params })
         .then(response => response.data)

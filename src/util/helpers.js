@@ -47,5 +47,5 @@ export const loadState = () => {
         })
 }
 
-export const clearState = async () => await AsyncStorage.removeItem('token')
+export const clearState = () => AsyncStorage.removeItem('token')
 

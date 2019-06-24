@@ -9,7 +9,7 @@ import { connect } from 'react-redux'
 import { Actions } from 'react-native-router-flux'
 import { common } from '../../util/common'
 import { httpFetch } from '../../util/request'
-import jwtDecode from 'jwt-decode'
+import AsyncStorage from '@react-native-community/async-storage'
 import { Container, Text, TextInput, Button, Alert } from '../../components/UI'
 
 type State = {
@@ -18,6 +18,7 @@ type State = {
     departamentoID: number | string,
     coletaTipo: Array<Object>,
     tipoID: number | string,
+    userData: Object,
     error: string
 }
 
@@ -35,10 +36,16 @@ class CollectForm extends React.Component<Props, State> {
         departamentoID: '',
         coletaTipo: [],
         tipoID: '',
+        userData: {},
         error: ''
     }
 
     componentDidMount () {
+        this.getUserData()
+        this.fetchCollectData()
+    }
+
+    fetchCollectData = () => {
         this.setState({ fetch: true })
         Promise.all([
             httpFetch({ method: 'GET', url: '/coletaDepart' }),
@@ -52,10 +59,19 @@ class CollectForm extends React.Component<Props, State> {
         }).catch(error => this.setState({ error: error, fetch: false }))
     }
 
+    getUserData = () => {
+        AsyncStorage.getItem('token')
+            .then(value => {
+                if (value !== null) {
+                    const data = JSON.parse(value)
+                    this.setState({ userData: data.userData })
+                }
+            })
+    }
+
     sendData = () => {
-        const { departamentoID, tipoID } = this.state
+        const { departamentoID, tipoID, userData } = this.state
         const { latitude, longitude, token } = this.props
-        let user = jwtDecode(token)
 
         if (departamentoID === '' || tipoID === '') return
 
@@ -67,25 +83,25 @@ class CollectForm extends React.Component<Props, State> {
                 longitude: longitude,
                 id_departamento: departamentoID,
                 id_tipo: departamentoID,
-                id_usr_coleta: user.userid
+                id_usr_coleta: userData.userid
             }
         }).then(() => Actions.replace('collectList'))
             .catch(error => this.setState({ error: error }))
     }
 
     render () {
-        const { fetch, coletaDepartamento, departamentoID, coletaTipo, tipoID, error } = this.state
+        const { fetch, coletaDepartamento, departamentoID, coletaTipo, tipoID, error, userData } = this.state
         const { latitude, longitude, token } = this.props
-        let user = jwtDecode(token)
 
         return (
-            <Container style={styles.container}>
+            <Container style={styles.container} >
 
                 {fetch && error === '' && <ActivityIndicator style={styles.activityIndicator} color={common.colors.white} />}
 
                 {!fetch && error !== '' && <Alert color={common.colors.red} msg={error} />}
 
-                {!fetch && error === '' &&
+                {
+                    !fetch && error === '' &&
                     <>
                         <Text style={styles.text}>Coleta de Ponto</Text>
 
@@ -105,7 +121,7 @@ class CollectForm extends React.Component<Props, State> {
 
                         <TextInput
                             placeholder='Usuário'
-                            value={'Usuário: ' + user.user}
+                            value={'Usuário: ' + userData.user}
                             placeholderTextColor={common.colors.lightGray}
                             selectionColor={common.colors.green}
                             editable={false}
@@ -155,7 +171,7 @@ class CollectForm extends React.Component<Props, State> {
                             style={styles.button} />
                     </>
                 }
-            </Container>
+            </Container >
         )
     }
 }

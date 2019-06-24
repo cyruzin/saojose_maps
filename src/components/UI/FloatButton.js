@@ -24,6 +24,7 @@ const FloatButton = (props: Props) => {
             style={[styles.button, style]}
             underlayColor={common.colors.lightGray}>
             <Icon
+                // $FlowFixMe
                 name={icon}
                 size={20}
                 color={common.colors.white}

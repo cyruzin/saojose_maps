@@ -27,6 +27,7 @@ type State = {
 type Props = {
     authentication: {
         authorized: boolean,
+        token: string,
         error: string
     },
     actions: {
