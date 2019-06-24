@@ -31,25 +31,12 @@ const maps = axios.create({
  * Setting headers.
  */
 
-maps.interceptors.request.use(response => {
-    AsyncStorage.getItem('token')
-        .then(value => {
-            if (value !== null) {
-                const userData = JSON.parse(value)
-                response.headers.Authorization = 'Bearer ' + userData.token
-                return response
-            }
-        })
-
-    return response
-})
-
-maps.interceptors.response.use(response => {
-    return response
-}, error => {
-    console.log(error.response)
-    return Promise.reject(error)
-})
+maps.interceptors.request.use(async (config) => {
+    const value = await AsyncStorage.getItem('token')
+    const data = JSON.parse(value)
+    config.headers.Authorization = `Bearer ${data.token}`
+    return config
+}, error => Promise.reject(error))
 
 export const httpFetch = ({ url, method, data, params }) =>
     maps({ url, method, data, params })

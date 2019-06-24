@@ -72,7 +72,7 @@ class CollectList extends React.Component<{}, State> {
 
                     {!fetch && error !== '' && <Alert color={common.colors.red} msg={error} />}
 
-                    {!fetch && error === '' && data > 0 && data.map(list => {
+                    {!fetch && error === '' && data.map(list => {
                         return (
                             <Container key={list.id} style={styles.content}>
                                 <Container style={styles.titleBox}>
