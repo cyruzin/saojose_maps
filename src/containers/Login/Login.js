@@ -21,7 +21,8 @@ type Credentials = {
 
 type State = {
     login: string,
-    password: string
+    password: string,
+    opacity: 90
 }
 
 type Props = {
@@ -39,7 +40,18 @@ class Login extends React.Component<Props, State> {
 
     state = {
         login: '',
-        password: ''
+        password: '',
+        opacity: 0
+    }
+
+    componentDidMount () {
+        this.opacityTime = setTimeout(() => {
+            this.setState({ opacity: 100 })
+        }, 300)
+    }
+
+    componentWillUnmount () {
+        if (this.opacityTime) clearTimeout(this.opacityTime)
     }
 
     checkAuthentication = () => {
@@ -64,11 +76,12 @@ class Login extends React.Component<Props, State> {
     }
 
     render () {
+        const { opacity } = this.state
         const { authorized, error } = this.props.authentication
 
         return (
             <Container style={styles.container}>
-                <View style={styles.inputBox}>
+                <View style={{ ...styles.inputBox, opacity: opacity }}>
                     <Text style={styles.title}>São José Mapas</Text>
 
                     {!!error && <Text style={styles.errorMsg}>{error}</Text>}
@@ -95,7 +108,7 @@ class Login extends React.Component<Props, State> {
                         onPress={() => this.checkAuthentication()}
                         style={styles.button} />
                 </View>
-            </Container>
+            </ Container>
         )
     }
 }
