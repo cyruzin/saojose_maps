@@ -1,7 +1,7 @@
 import React from 'react'
 import { Router, Scene, Drawer } from 'react-native-router-flux'
 import { common } from '../../util/common'
-import { onBackPress } from '../../util/helpers'
+import { onBackPress, loadState } from '../../util/helpers'
 import DrawerMenu from '../DrawerMenu/DrawerMenu'
 import Login from '../../containers/Login/Login'
 import Dashboard from '../../containers/Dashboard/Dashboard'
@@ -16,15 +16,19 @@ export default () => (
         navigationBarStyle={{ backgroundColor: common.colors.dark }}
         backAndroidHandler={onBackPress} >
         <Scene key='root'>
-            <Scene key='login' component={Login} hideNavBar />
+            <Scene
+                key='login'
+                component={Login}
+                onEnter={loadState}
+                hideNavBar
+                initial />
             <Drawer
                 key='drawerMenu'
                 renderTitle='São José Mapas'
                 contentComponent={DrawerMenu}
                 drawerWidth={250}
                 tintColor={common.colors.white}
-                hideNavBar
-                initial>
+                hideNavBar>
                 <Scene key='home'>
                     <Scene key='dashboard' component={Dashboard} />
                     <Scene key='collect' component={Collect} />

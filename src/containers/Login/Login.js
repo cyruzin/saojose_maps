@@ -8,6 +8,8 @@ import { StyleSheet, View } from 'react-native'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Actions } from 'react-native-router-flux'
+import jwtDecode from 'jwt-decode'
+import AsyncStorage from '@react-native-community/async-storage'
 import { checkAuthentication } from '../../redux/ducks/authentication'
 import { common } from '../../util/common'
 import { Container, TextInput, Button, Text } from '../../components/UI'
@@ -39,24 +41,30 @@ class Login extends React.Component<Props, State> {
         password: ''
     }
 
-    componentDidMount () {
-        if (this.props.authentication.authorized) Actions.reset('drawerMenu')
-    }
-
-    componentDidUpdate () {
-        if (this.props.authentication.authorized) Actions.reset('drawerMenu')
-    }
-
     checkAuthentication = () => {
         let credentials = {
             login: this.state.login.trim(),
             password: this.state.password.trim()
         }
         this.props.actions.checkAuthentication(credentials)
+            .then(() => {
+                let userData = jwtDecode(this.props.authentication.token)
+
+                AsyncStorage.setItem(
+                    'token',
+                    JSON.stringify({
+                        ...this.props.authentication,
+                        userData
+                    })
+                )
+
+                Actions.reset('drawerMenu')
+            })
     }
 
     render () {
         const { authorized, error } = this.props.authentication
+
         return (
             <Container style={styles.container}>
                 <View style={styles.inputBox}>

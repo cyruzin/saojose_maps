@@ -103,9 +103,17 @@ type ThunkAction = (dispatch: Dispatch, getState: GetState) => any
 type Dispatch = (action: Action | ThunkAction | PromiseAction | Array<Action>) => any
 
 export const checkAuthentication = (credentials: Object): ThunkAction => dispatch => {
-    dispatch(fetchAuthentication())
+    return new Promise((resolve, reject) => {
+        dispatch(fetchAuthentication())
 
-    return httpAuthentication(credentials)
-        .then(response => dispatch(successAuthentication(response.data)))
-        .catch(error => dispatch(failureAuthentication(error)))
+        return httpAuthentication(credentials)
+            .then(response => {
+                dispatch(successAuthentication(response.data))
+                resolve()
+            })
+            .catch(error => {
+                dispatch(failureAuthentication(error))
+                reject()
+            })
+    })
 }

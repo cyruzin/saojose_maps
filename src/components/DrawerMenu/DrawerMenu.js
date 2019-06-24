@@ -4,10 +4,9 @@ import { useDispatch } from 'react-redux'
 import { Actions } from 'react-native-router-flux';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { resetAuthentication } from '../../redux/ducks/authentication'
-import { routeFix } from '../../util/helpers'
+import { routeFix, clearState } from '../../util/helpers'
 import { common } from '../../util/common'
 import { Container, Text } from '../UI'
-
 
 const DrawerMenu = () => {
     const dispatch = useDispatch()
@@ -54,7 +53,11 @@ const DrawerMenu = () => {
             </TouchableWithoutFeedback>
 
             <TouchableWithoutFeedback
-                onPress={() => dispatch(resetAuthentication())}
+                onPress={() => {
+                    clearState()
+                    dispatch(resetAuthentication())
+                    Actions.reset('login')
+                }}
                 hitSlop={styles.textHitSlop}>
                 <View style={styles.textContainer}>
                     <Icon
@@ -65,7 +68,7 @@ const DrawerMenu = () => {
                     <Text style={styles.text}>Logout</Text>
                 </View>
             </TouchableWithoutFeedback>
-        </Container>
+        </Container >
     )
 }
 

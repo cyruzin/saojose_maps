@@ -11,7 +11,6 @@ import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
 import { common } from '../../util/common'
 import { Container, Text, Alert } from '../../components/UI'
 
-
 type State = {
     latitude: number,
     longitude: number,
@@ -31,8 +30,6 @@ class Dashboard extends React.Component<Props, State> {
     }
 
     componentDidMount () {
-        if (!this.props.authorized) Actions.reset('login')
-
         navigator.geolocation.getCurrentPosition(position => {
             this.setState({
                 latitude: position.coords.latitude,
@@ -43,10 +40,6 @@ class Dashboard extends React.Component<Props, State> {
             error => this.setState({ error: error.message }),
             { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 },
         )
-    }
-
-    componentDidUpdate () {
-        if (!this.props.authorized) Actions.reset('login')
     }
 
     render () {
