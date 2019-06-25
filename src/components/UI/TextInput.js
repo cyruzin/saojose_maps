@@ -12,12 +12,21 @@ type Props = {
     onChangeText: () => void
 }
 
-const TextInput = (props: Props) => (
+const TextInput = (props: Props) => {
+  const { style, onChangeText, value } = props
+  return (
     <RNTextInput
-        style={props.style}
-        onChangeText={props.onChangeText}
-        value={props.value}
-        {...props} />
-)
+      style={style}
+      onChangeText={onChangeText}
+      value={value}
+      {...props}
+    />
+  )
+}
+
+TextInput.defaultProps = {
+  style: {},
+  value: ''
+}
 
 export default TextInput

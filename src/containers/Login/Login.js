@@ -11,8 +11,10 @@ import { Actions } from 'react-native-router-flux'
 import jwtDecode from 'jwt-decode'
 import AsyncStorage from '@react-native-community/async-storage'
 import { checkAuthentication } from '../../redux/ducks/authentication'
-import { common } from '../../util/common'
-import { Container, TextInput, Button, Text } from '../../components/UI'
+import common from '../../util/common'
+import {
+  Container, TextInput, Button, Text
+} from '../../components/UI'
 
 type Credentials = {
     login: string,
@@ -38,132 +40,138 @@ type Props = {
 }
 
 class Login extends React.Component<Props, State> {
-
     state = {
-        login: '',
-        password: '',
-        opacity: 0
+      login: '',
+      password: '',
+      opacity: 0
     }
 
-    componentDidMount () {
-        // $FlowFixMe
-        this.opacityTime = setTimeout(() => {
-            this.setState({ opacity: 100 })
-        }, 300)
+    componentDidMount() {
+      // $FlowFixMe
+      this.opacityTime = setTimeout(() => {
+        this.setState({ opacity: 100 })
+      }, 300)
     }
 
-    componentWillUnmount () {
-        // $FlowFixMe
-        if (this.opacityTime) clearTimeout(this.opacityTime)
+    componentWillUnmount() {
+      // $FlowFixMe
+      if (this.opacityTime) clearTimeout(this.opacityTime)
     }
 
     checkAuthentication = () => {
-        let credentials = {
-            login: this.state.login.trim(),
-            password: this.state.password.trim()
-        }
-        this.props.actions.checkAuthentication(credentials)
-            .then(response => {
-                let userData = jwtDecode(this.props.authentication.token)
+      const { login, password } = this.state
+      const { actions, authentication } = this.props
+      const credentials = {
+        login: login.trim(),
+        password: password.trim()
+      }
 
-                AsyncStorage.setItem(
-                    'token',
-                    JSON.stringify({
-                        ...this.props.authentication,
-                        userData
-                    })
-                )
+      actions.checkAuthentication(credentials)
+        .then(() => {
+          const userData = jwtDecode(authentication.token)
 
-                Actions.reset('drawerMenu')
-            }).catch(error => { })
+          AsyncStorage.setItem(
+            'token',
+            JSON.stringify({
+              ...authentication,
+              userData
+            })
+          )
+
+          Actions.reset('drawerMenu')
+        }).catch(() => { })
     }
 
-    render () {
-        const { opacity } = this.state
-        const { fetch, error } = this.props.authentication
+    render() {
+      const { authentication } = this.props
+      const { opacity } = this.state
+      const { fetch, error } = authentication
 
-        return (
-            <Container style={styles.container}>
-                <View style={{ ...styles.inputBox, opacity: opacity }}>
-                    <Text style={styles.title}>São José Mapas</Text>
+      return (
+        <Container style={styles.container}>
+          <View style={{ ...styles.inputBox, opacity }}>
+            <Text style={styles.title}>São José Mapas</Text>
 
-                    {!!error && <Text style={styles.errorMsg}>{error}</Text>}
+            {!!error && <Text style={styles.errorMsg}>{error}</Text>}
 
-                    <TextInput
-                        onChangeText={(login) => this.setState({ login })}
-                        placeholder='Usuário'
-                        placeholderTextColor={common.colors.lightGray}
-                        selectionColor={common.colors.green}
-                        autoCapitalize='none'
-                        style={styles.input} />
+            <TextInput
+              onChangeText={login => this.setState({ login })}
+              placeholder="Usuário"
+              placeholderTextColor={common.colors.lightGray}
+              selectionColor={common.colors.green}
+              autoCapitalize="none"
+              style={styles.input}
+            />
 
-                    <TextInput
-                        onChangeText={(password) => this.setState({ password })}
-                        placeholder='Senha'
-                        placeholderTextColor={common.colors.lightGray}
-                        selectionColor={common.colors.green}
-                        secureTextEntry
-                        autoCapitalize='none'
-                        style={styles.input} />
+            <TextInput
+              onChangeText={password => this.setState({ password })}
+              placeholder="Senha"
+              placeholderTextColor={common.colors.lightGray}
+              selectionColor={common.colors.green}
+              secureTextEntry
+              autoCapitalize="none"
+              style={styles.input}
+            />
 
-                    <Button
-                        title={!fetch ? 'LOGIN' : 'CARREGANDO...'}
-                        onPress={() => this.checkAuthentication()}
-                        style={styles.button} />
-                </View>
-            </ Container>
-        )
+            <Button
+              title={!fetch ? 'LOGIN' : 'CARREGANDO...'}
+              onPress={() => this.checkAuthentication()}
+              style={styles.button}
+            />
+          </View>
+        </Container>
+      )
     }
 }
 
 const styles = StyleSheet.create({
-    container: {
-        padding: 10,
-        backgroundColor: common.colors.dark
-    },
-    title: {
-        fontSize: 36,
-        opacity: 50,
-        fontWeight: 'bold',
-        color: common.colors.white,
-        textAlign: 'center',
-        marginBottom: 50
-    },
-    errorMsg: {
-        marginBottom: 20,
-        color: common.colors.red,
-        textAlign: 'center'
-    },
-    inputBox: {
-        flex: 1,
-        justifyContent: 'center',
-    },
-    input: {
-        marginBottom: 20,
-        borderColor: common.colors.green,
-        color: common.colors.white,
-        borderBottomWidth: 1,
-        borderBottomLeftRadius: 10,
-        borderBottomRightRadius: 10,
-        paddingLeft: 15,
-    },
-    button: {
-        marginTop: 30,
-        borderRadius: 50
-    }
+  container: {
+    padding: 10,
+    backgroundColor: common.colors.dark
+  },
+  title: {
+    fontSize: 36,
+    opacity: 50,
+    fontWeight: 'bold',
+    color: common.colors.white,
+    textAlign: 'center',
+    marginBottom: 50
+  },
+  errorMsg: {
+    marginBottom: 20,
+    color: common.colors.red,
+    textAlign: 'center'
+  },
+  inputBox: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  input: {
+    marginBottom: 20,
+    borderColor: common.colors.green,
+    color: common.colors.white,
+    borderBottomWidth: 1,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    paddingLeft: 15,
+  },
+  button: {
+    marginTop: 30,
+    borderRadius: 50
+  }
 })
 
 const mapStateToProps = state => ({
-    authentication: state.authentication
+  authentication: state.authentication
 })
 
 const mapDispatchToProps = dispatch => ({
-    actions: bindActionCreators({
-        checkAuthentication
-    }, dispatch)
+  actions: bindActionCreators({
+    checkAuthentication
+  }, dispatch)
 })
 
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(Login)

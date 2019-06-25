@@ -1,5 +1,5 @@
 /**
- * @flow 
+ * @flow
  * @format
  */
 
@@ -11,16 +11,23 @@ type Props = {
     children: React.Node
 }
 
-const Container = (props: Props) => (
-    <View style={[styles.container, props.style]}>
-        {props.children}
+const Container = (props: Props) => {
+  const { style, children } = props
+  return (
+    <View style={[styles.container, style]}>
+      {children}
     </View>
-)
+  )
+}
+
+Container.defaultProps = {
+  style: {}
+}
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    }
+  container: {
+    flex: 1
+  }
 })
 
 export default Container

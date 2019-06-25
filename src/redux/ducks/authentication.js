@@ -1,20 +1,19 @@
 /**
- * @flow 
+ * @flow
  * @format
  */
 
 import { httpAuthentication } from '../../util/request'
-
 
 /**
  * Authentication Action Types.
  */
 
 const types = {
-    FETCH: 'AUTHENTICATION/FETCH',
-    SUCCESS: 'AUTHENTICATION/SUCCESS',
-    FAILURE: 'AUTHENTICATION/FAILURE',
-    RESET: 'AUTHENTICATION/RESET'
+  FETCH: 'AUTHENTICATION/FETCH',
+  SUCCESS: 'AUTHENTICATION/SUCCESS',
+  FAILURE: 'AUTHENTICATION/FAILURE',
+  RESET: 'AUTHENTICATION/RESET'
 }
 
 type FetchAction = { type: typeof types.FETCH }
@@ -34,11 +33,11 @@ type State = {
     error: string
 }
 
-let initialState: State = {
-    fetch: false,
-    token: '',
-    authorized: false,
-    error: ''
+const initialState: State = {
+  fetch: false,
+  token: '',
+  authorized: false,
+  error: ''
 }
 
 /**
@@ -46,31 +45,31 @@ let initialState: State = {
  */
 
 export default (state: State = initialState, action: Action): State => {
-    switch (action.type) {
-        case types.FETCH:
-            return {
-                ...state,
-                fetch: true
-            }
-        case types.SUCCESS:
-            return {
-                ...state,
-                fetch: false,
-                token: action.payload,
-                authorized: true,
-                error: ''
-            }
-        case types.FAILURE:
-            return {
-                ...state,
-                fetch: false,
-                error: action.payload
-            }
-        case types.RESET:
-            return initialState
-        default:
-            return state
-    }
+  switch (action.type) {
+    case types.FETCH:
+      return {
+        ...state,
+        fetch: true
+      }
+    case types.SUCCESS:
+      return {
+        ...state,
+        fetch: false,
+        token: action.payload,
+        authorized: true,
+        error: ''
+      }
+    case types.FAILURE:
+      return {
+        ...state,
+        fetch: false,
+        error: action.payload
+      }
+    case types.RESET:
+      return initialState
+    default:
+      return state
+  }
 }
 
 /**
@@ -78,19 +77,19 @@ export default (state: State = initialState, action: Action): State => {
  */
 
 export const fetchAuthentication = (): FetchAction => ({
-    type: types.FETCH
+  type: types.FETCH
 })
 
 export const successAuthentication = (payload: Object): SuccessAction => ({
-    type: types.SUCCESS, payload
+  type: types.SUCCESS, payload
 })
 
 export const failureAuthentication = (payload: string): FailureAction => ({
-    type: types.FAILURE, payload
+  type: types.FAILURE, payload
 })
 
 export const resetAuthentication = (): ResetAction => ({
-    type: types.RESET
+  type: types.RESET
 })
 
 /**
@@ -102,18 +101,15 @@ type PromiseAction = Promise<Action>
 type ThunkAction = (dispatch: Dispatch, getState: GetState) => any
 type Dispatch = (action: Action | ThunkAction | PromiseAction | Array<Action>) => any
 
-export const checkAuthentication = (credentials: Object): ThunkAction => dispatch => {
-    return new Promise((resolve, reject) => {
-        dispatch(fetchAuthentication())
-
-        return httpAuthentication(credentials)
-            .then(response => {
-                dispatch(successAuthentication(response.data))
-                resolve()
-            })
-            .catch(error => {
-                dispatch(failureAuthentication(error))
-                reject()
-            })
+export const checkAuthentication = (credentials: Object):
+    ThunkAction => dispatch => new Promise((resolve, reject) => {
+  dispatch(fetchAuthentication())
+  return httpAuthentication(credentials)
+    .then((response) => {
+      dispatch(successAuthentication(response.data))
+      resolve()
+    }).catch((error) => {
+      dispatch(failureAuthentication(error))
+      reject()
     })
-}
+})

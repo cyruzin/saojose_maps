@@ -1,5 +1,5 @@
 /**
- * @flow 
+ * @flow
  * @format
  */
 
@@ -7,10 +7,12 @@ import React from 'react'
 import { StyleSheet, Picker, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions } from 'react-native-router-flux'
-import { common } from '../../util/common'
-import { httpFetch } from '../../util/request'
 import AsyncStorage from '@react-native-community/async-storage'
-import { Container, Text, TextInput, Button, Alert } from '../../components/UI'
+import common from '../../util/common'
+import { httpFetch } from '../../util/request'
+import {
+  Container, Text, TextInput, Button, Alert
+} from '../../components/UI'
 
 type State = {
     fetch: boolean,
@@ -24,200 +26,210 @@ type State = {
 
 type Props = {
     latitude: string,
-    longitude: string,
-    token: string
+    longitude: string
 }
 
 class CollectForm extends React.Component<Props, State> {
-
     state = {
-        fetch: false,
-        coletaDepartamento: [],
-        departamentoID: '',
-        coletaTipo: [],
-        tipoID: '',
-        userData: {},
-        error: ''
+      fetch: false,
+      coletaDepartamento: [],
+      departamentoID: '',
+      coletaTipo: [],
+      tipoID: '',
+      userData: {},
+      error: ''
     }
 
-    componentDidMount () {
-        this.getUserData()
-        this.fetchCollectData()
+    componentDidMount() {
+      this.getUserData()
+      this.fetchCollectData()
     }
 
     fetchCollectData = () => {
-        this.setState({ fetch: true })
-        Promise.all([
-            httpFetch({ method: 'GET', url: '/coletaDepart' }),
-            httpFetch({ method: 'GET', url: '/coletaTipo' })
-        ]).then(([coletaDepartamento, coletaTipo]) => {
-            this.setState({
-                coletaDepartamento: coletaDepartamento.data,
-                coletaTipo: coletaTipo.data,
-                fetch: false
-            })
-        }).catch(error => this.setState({ error: error, fetch: false }))
+      this.setState({ fetch: true })
+      Promise.all([
+        httpFetch({ method: 'GET', url: '/coletaDepart' }),
+        httpFetch({ method: 'GET', url: '/coletaTipo' })
+      ]).then(([coletaDepartamento, coletaTipo]) => {
+        this.setState({
+          coletaDepartamento: coletaDepartamento.data,
+          coletaTipo: coletaTipo.data,
+          fetch: false
+        })
+      }).catch(error => this.setState({ error, fetch: false }))
     }
 
     getUserData = () => {
-        AsyncStorage.getItem('token')
-            .then(value => {
-                if (value !== null) {
-                    const data = JSON.parse(value)
-                    this.setState({ userData: data.userData })
-                }
-            })
+      AsyncStorage.getItem('token')
+        .then((value) => {
+          if (value !== null) {
+            const data = JSON.parse(value)
+            this.setState({ userData: data.userData })
+          }
+        })
     }
 
     sendData = () => {
-        const { departamentoID, tipoID, userData } = this.state
-        const { latitude, longitude, token } = this.props
+      const { departamentoID, tipoID, userData } = this.state
+      const { latitude, longitude } = this.props
 
-        if (departamentoID === '' || tipoID === '') return
+      if (departamentoID === '' || tipoID === '') return
 
-        httpFetch({
-            method: 'POST',
-            url: '/coleta',
-            data: {
-                latitude: latitude,
-                longitude: longitude,
-                id_departamento: departamentoID,
-                id_tipo: departamentoID,
-                id_usr_coleta: userData.userid
-            }
-        }).then(() => Actions.replace('collectList'))
-            .catch(error => this.setState({ error: error }))
+      httpFetch({
+        method: 'POST',
+        url: '/coleta',
+        data: {
+          latitude,
+          longitude,
+          id_departamento: departamentoID,
+          id_tipo: departamentoID,
+          id_usr_coleta: userData.userid
+        }
+      }).then(() => Actions.replace('collectList'))
+        .catch(error => this.setState({ error }))
     }
 
-    render () {
-        const { fetch, coletaDepartamento, departamentoID, coletaTipo, tipoID, error, userData } = this.state
-        const { latitude, longitude, token } = this.props
+    render() {
+      const {
+        fetch, coletaDepartamento, departamentoID, coletaTipo, tipoID, error, userData
+      } = this.state
+      const { latitude, longitude } = this.props
 
-        return (
-            <Container style={styles.container} >
+      return (
+        <Container style={styles.container}>
 
-                {fetch && error === '' && <ActivityIndicator style={styles.activityIndicator} color={common.colors.white} />}
+          {fetch && error === '' && <ActivityIndicator style={styles.activityIndicator} color={common.colors.white} />}
 
-                {!fetch && error !== '' && <Alert color={common.colors.red} msg={error} />}
+          {!fetch && error !== '' && <Alert color={common.colors.red} msg={error} />}
 
-                {
-                    !fetch && error === '' &&
+          {
+                    !fetch && error === ''
+                    && (
                     <>
-                        <Text style={styles.text}>Coleta de Ponto</Text>
+                      <Text style={styles.text}>Coleta de Ponto</Text>
 
-                        <TextInput
-                            value={'Latitude: ' + latitude.toString()}
-                            placeholderTextColor={common.colors.lightGray}
-                            selectionColor={common.colors.green}
-                            editable={false}
-                            style={styles.input} />
+                      <TextInput
+                        value={`Latitude: ${latitude.toString()}`}
+                        placeholderTextColor={common.colors.lightGray}
+                        selectionColor={common.colors.green}
+                        editable={false}
+                        style={styles.input}
+                      />
 
-                        <TextInput
-                            value={'Longitude: ' + longitude.toString()}
-                            placeholderTextColor={common.colors.lightGray}
-                            selectionColor={common.colors.green}
-                            editable={false}
-                            style={styles.input} />
+                      <TextInput
+                        value={`Longitude: ${longitude.toString()}`}
+                        placeholderTextColor={common.colors.lightGray}
+                        selectionColor={common.colors.green}
+                        editable={false}
+                        style={styles.input}
+                      />
 
-                        <TextInput
-                            placeholder='Usuário'
-                            value={'Usuário: ' + userData.user}
-                            placeholderTextColor={common.colors.lightGray}
-                            selectionColor={common.colors.green}
-                            editable={false}
-                            style={styles.input} />
+                      <TextInput
+                        placeholder="Usuário"
+                        value={`Usuário: ${userData.user}`}
+                        placeholderTextColor={common.colors.lightGray}
+                        selectionColor={common.colors.green}
+                        editable={false}
+                        style={styles.input}
+                      />
 
-                        <Picker
-                            selectedValue={departamentoID}
-                            style={styles.picker}
-                            itemStyle={styles.pickerItem}
-                            onValueChange={departamentoID => {
-                                if (departamentoID !== -1) {
-                                    this.setState({ departamentoID: departamentoID })
-                                }
+                      <Picker
+                        selectedValue={departamentoID}
+                        style={styles.picker}
+                        itemStyle={styles.pickerItem}
+                        onValueChange={(id) => {
+                          if (id !== -1) {
+                            this.setState({ departamentoID: id })
+                          }
+                        }
                             }
-                            }>
-                            <Picker.Item label="Selecione um departamento" value={-1} />
-                            {coletaDepartamento.map(dep => (
-                                <Picker.Item
-                                    key={dep.id}
-                                    label={dep.nome}
-                                    value={dep.id} />
-                            ))}
-                        </Picker>
+                      >
+                        <Picker.Item label="Selecione um departamento" value={-1} />
+                        {coletaDepartamento.map(dep => (
+                          <Picker.Item
+                            key={dep.id}
+                            label={dep.nome}
+                            value={dep.id}
+                          />
+                        ))}
+                      </Picker>
 
-                        <Picker
-                            selectedValue={tipoID}
-                            style={styles.picker}
-                            itemStyle={styles.pickerItem}
-                            onValueChange={tipoID => {
-                                if (tipoID !== -1) {
-                                    this.setState({ tipoID: tipoID })
-                                }
+                      <Picker
+                        selectedValue={tipoID}
+                        style={styles.picker}
+                        itemStyle={styles.pickerItem}
+                        onValueChange={(id) => {
+                          if (id !== -1) {
+                            this.setState({ tipoID: id })
+                          }
+                        }
                             }
-                            }>
-                            <Picker.Item label="Selecione um tipo" value={-1} />
-                            {coletaTipo.map(dep => (
-                                <Picker.Item
-                                    key={dep.id}
-                                    label={dep.nome}
-                                    value={dep.id} />
-                            ))}
-                        </Picker>
+                      >
+                        <Picker.Item label="Selecione um tipo" value={-1} />
+                        {coletaTipo.map(dep => (
+                          <Picker.Item
+                            key={dep.id}
+                            label={dep.nome}
+                            value={dep.id}
+                          />
+                        ))}
+                      </Picker>
 
-                        <Button
-                            title='ENVIAR'
-                            onPress={() => this.sendData()}
-                            style={styles.button} />
+                      <Button
+                        title="ENVIAR"
+                        onPress={() => this.sendData()}
+                        style={styles.button}
+                      />
                     </>
+                    )
                 }
-            </Container >
-        )
+        </Container>
+      )
     }
 }
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: common.colors.dark
-    },
-    activityIndicator: {
-        marginTop: 10,
-    },
-    text: {
-        color: common.colors.white,
-        fontSize: 18,
-        marginTop: 10,
-        marginLeft: 10,
-        marginBottom: 20,
-        fontWeight: 'bold'
-    },
-    input: {
-        marginBottom: 20,
-        borderColor: common.colors.green,
-        color: common.colors.white,
-        borderBottomWidth: 1,
-        borderBottomLeftRadius: 10,
-        borderBottomRightRadius: 10,
-        paddingLeft: 15,
-    },
-    picker: {
-        width: '100%',
-        height: 65,
-        color: common.colors.white
-    },
-    pickerItem: {
-        height: 40
-    },
-    button: {
-        marginTop: 20,
-        marginLeft: 5,
-        marginRight: 5,
-        borderRadius: 50
-    }
+  container: {
+    backgroundColor: common.colors.dark
+  },
+  activityIndicator: {
+    marginTop: 10,
+  },
+  text: {
+    color: common.colors.white,
+    fontSize: 18,
+    marginTop: 10,
+    marginLeft: 10,
+    marginBottom: 20,
+    fontWeight: 'bold'
+  },
+  input: {
+    marginBottom: 20,
+    borderColor: common.colors.green,
+    color: common.colors.white,
+    borderBottomWidth: 1,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    paddingLeft: 15,
+  },
+  picker: {
+    width: '100%',
+    height: 65,
+    color: common.colors.white
+  },
+  pickerItem: {
+    height: 40
+  },
+  button: {
+    marginTop: 20,
+    marginLeft: 5,
+    marginRight: 5,
+    borderRadius: 50
+  }
 })
 
 const mapStateToProps = state => ({
-    token: state.authentication.token
+  token: state.authentication.token
 })
 
 export default connect(mapStateToProps)(CollectForm)
