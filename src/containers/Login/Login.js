@@ -22,11 +22,12 @@ type Credentials = {
 type State = {
     login: string,
     password: string,
-    opacity: 90
+    opacity: number
 }
 
 type Props = {
     authentication: {
+        fetch: boolean,
         authorized: boolean,
         token: string,
         error: string
@@ -45,12 +46,14 @@ class Login extends React.Component<Props, State> {
     }
 
     componentDidMount () {
+        // $FlowFixMe
         this.opacityTime = setTimeout(() => {
             this.setState({ opacity: 100 })
         }, 300)
     }
 
     componentWillUnmount () {
+        // $FlowFixMe
         if (this.opacityTime) clearTimeout(this.opacityTime)
     }
 
@@ -60,7 +63,7 @@ class Login extends React.Component<Props, State> {
             password: this.state.password.trim()
         }
         this.props.actions.checkAuthentication(credentials)
-            .then(() => {
+            .then(response => {
                 let userData = jwtDecode(this.props.authentication.token)
 
                 AsyncStorage.setItem(
@@ -72,12 +75,12 @@ class Login extends React.Component<Props, State> {
                 )
 
                 Actions.reset('drawerMenu')
-            })
+            }).catch(error => { })
     }
 
     render () {
         const { opacity } = this.state
-        const { authorized, error } = this.props.authentication
+        const { fetch, error } = this.props.authentication
 
         return (
             <Container style={styles.container}>
@@ -104,7 +107,7 @@ class Login extends React.Component<Props, State> {
                         style={styles.input} />
 
                     <Button
-                        title='LOGIN'
+                        title={!fetch ? 'LOGIN' : 'CARREGANDO...'}
                         onPress={() => this.checkAuthentication()}
                         style={styles.button} />
                 </View>

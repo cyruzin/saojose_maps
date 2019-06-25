@@ -4,9 +4,7 @@
  */
 
 import * as React from 'react'
-import { connect } from 'react-redux'
 import { StyleSheet } from 'react-native'
-import { Actions } from 'react-native-router-flux'
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
 import { common } from '../../util/common'
 import { Container, Text, Alert } from '../../components/UI'
@@ -17,11 +15,7 @@ type State = {
     error: string
 }
 
-type Props = {
-    authorized: bool
-}
-
-class Dashboard extends React.Component<Props, State> {
+class Dashboard extends React.Component<{}, State> {
 
     state = {
         latitude: 37.78825,
@@ -91,8 +85,4 @@ const styles = StyleSheet.create({
     },
 })
 
-const mapStateToProps = state => ({
-    authorized: state.authentication.authorized
-})
-
-export default connect(mapStateToProps)(Dashboard)
+export default Dashboard
