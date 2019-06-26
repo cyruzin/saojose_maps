@@ -18,7 +18,7 @@ const ButtonCard = (props: Props) => {
   return (
     <TouchableHighlight
       onPress={onPress}
-      style={{ ...styles.card, style }}
+      style={[styles.card, style]}
       underlayColor={common.colors.lightGray}
     >
       {children}
@@ -28,7 +28,7 @@ const ButtonCard = (props: Props) => {
 
 ButtonCard.defaultProps = {
   style: {},
-  children: null
+  children: <></>
 }
 
 const styles = StyleSheet.create({
