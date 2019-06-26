@@ -4,7 +4,7 @@
  */
 
 import * as React from 'react'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
 import common from '../../util/common'
 import { Alert } from '../../components/UI'
@@ -38,12 +38,12 @@ class Dashboard extends React.Component<{}, State> {
       const { latitude, longitude, error } = this.state
 
       return (
-        <>
+        <View style={styles.container}>
           {error !== '' && <Alert color={common.colors.red} msg={error} />}
 
           {error === '' && (
           <MapView
-            style={styles.container}
+            style={styles.map}
             provider={PROVIDER_GOOGLE}
             loadingIndicatorColor={common.colors.green}
             loadingEnabled
@@ -67,7 +67,7 @@ class Dashboard extends React.Component<{}, State> {
             />
           </MapView>
           )}
-        </>
+        </View>
       )
     }
 }
@@ -75,11 +75,12 @@ class Dashboard extends React.Component<{}, State> {
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-    height: 400,
-    width: 400,
     justifyContent: 'flex-end',
     alignItems: 'center',
-  }
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject
+  },
 })
 
 export default Dashboard

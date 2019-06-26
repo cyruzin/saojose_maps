@@ -4,7 +4,7 @@
  */
 
 import * as React from 'react'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
 import common from '../../util/common'
 import { Alert } from '../../components/UI'
@@ -42,26 +42,28 @@ class GeoLocation extends React.Component<{}, State> {
           {error !== '' && <Alert color={common.colors.red} msg={error} />}
 
           {error === '' && (
-          <MapView
-            style={styles.container}
-            provider={PROVIDER_GOOGLE}
-            loadingIndicatorColor={common.colors.green}
-            loadingEnabled
-            showsUserLocation
-            region={{
-              latitude,
-              longitude,
-              latitudeDelta: 0.0042,
-              longitudeDelta: 0.0031
-            }}
-          >
-            <Marker
-              coordinate={{
-                latitude,
-                longitude
-              }}
-            />
-          </MapView>
+            <View style={styles.container}>
+              <MapView
+                style={styles.map}
+                provider={PROVIDER_GOOGLE}
+                loadingIndicatorColor={common.colors.green}
+                loadingEnabled
+                showsUserLocation
+                region={{
+                  latitude,
+                  longitude,
+                  latitudeDelta: 0.0042,
+                  longitudeDelta: 0.0031
+                }}
+              >
+                <Marker
+                  coordinate={{
+                    latitude,
+                    longitude
+                  }}
+                />
+              </MapView>
+            </View>
           )}
         </>
       )
@@ -71,11 +73,12 @@ class GeoLocation extends React.Component<{}, State> {
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-    height: 400,
-    width: 400,
     justifyContent: 'flex-end',
     alignItems: 'center',
-  }
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject
+  },
 })
 
 export default GeoLocation

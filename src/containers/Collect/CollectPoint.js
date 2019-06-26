@@ -5,7 +5,7 @@
 
 import React from 'react'
 import { connect } from 'react-redux'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
 import { routeFix } from '../../util/helpers'
 import common from '../../util/common'
@@ -47,9 +47,9 @@ class CollectPoint extends React.Component<{}, State> {
 
           {error === ''
                     && (
-                    <>
+                    <View style={styles.container}>
                       <MapView
-                        style={styles.container}
+                        style={styles.map}
                         provider={PROVIDER_GOOGLE}
                         loadingIndicatorColor={common.colors.green}
                         loadingEnabled
@@ -80,7 +80,7 @@ class CollectPoint extends React.Component<{}, State> {
                             />
                             )
                         }
-                    </>
+                    </View>
                     )
                 }
         </>
@@ -91,11 +91,12 @@ class CollectPoint extends React.Component<{}, State> {
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-    height: 400,
-    width: 400,
     justifyContent: 'flex-end',
     alignItems: 'center',
-  }
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject
+  },
 })
 
 const mapStateToProps = state => ({

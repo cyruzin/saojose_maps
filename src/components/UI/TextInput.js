@@ -8,7 +8,7 @@ import { TextInput as RNTextInput } from 'react-native'
 
 type Props = {
     style?: Object,
-    value?: string,
+    value: string,
     onChangeText: () => void
 }
 
@@ -25,8 +25,7 @@ const TextInput = (props: Props) => {
 }
 
 TextInput.defaultProps = {
-  style: {},
-  value: ''
+  style: {}
 }
 
 export default TextInput
