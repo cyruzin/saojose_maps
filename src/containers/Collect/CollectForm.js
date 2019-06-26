@@ -5,7 +5,6 @@
 
 import React from 'react'
 import { StyleSheet, Picker, ActivityIndicator } from 'react-native'
-import { connect } from 'react-redux'
 import { Actions } from 'react-native-router-flux'
 import AsyncStorage from '@react-native-community/async-storage'
 import common from '../../util/common'
@@ -91,14 +90,16 @@ class CollectForm extends React.Component<Props, State> {
 
     render() {
       const {
-        fetch, coletaDepartamento, departamentoID, coletaTipo, tipoID, error, userData
+        fetch, coletaDepartamento, departamentoID,
+        coletaTipo, tipoID, error, userData
       } = this.state
       const { latitude, longitude } = this.props
 
       return (
         <Container style={styles.container}>
 
-          {fetch && error === '' && <ActivityIndicator style={styles.activityIndicator} color={common.colors.white} />}
+          {fetch && error === ''
+          && <ActivityIndicator style={styles.activityIndicator} color={common.colors.white} />}
 
           {!fetch && error !== '' && <Alert color={common.colors.red} msg={error} />}
 
@@ -228,8 +229,4 @@ const styles = StyleSheet.create({
   }
 })
 
-const mapStateToProps = state => ({
-  token: state.authentication.token
-})
-
-export default connect(mapStateToProps)(CollectForm)
+export default CollectForm

@@ -4,7 +4,6 @@
  */
 
 import React from 'react'
-import { connect } from 'react-redux'
 import { StyleSheet, View } from 'react-native'
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
 import { routeFix } from '../../util/helpers'
@@ -99,8 +98,4 @@ const styles = StyleSheet.create({
   },
 })
 
-const mapStateToProps = state => ({
-  authorized: state.authentication.authorized
-})
-
-export default connect(mapStateToProps)(CollectPoint)
+export default CollectPoint

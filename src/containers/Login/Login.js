@@ -53,6 +53,22 @@ class Login extends React.Component<Props, State> {
       }, 300)
     }
 
+    componentDidUpdate() {
+      const { authentication } = this.props
+      if (authentication.authorized) {
+        const userData = jwtDecode(authentication.token)
+
+        AsyncStorage.setItem(
+          'token',
+          JSON.stringify({
+            ...authentication,
+            userData
+          })
+        )
+        Actions.reset('drawerMenu')
+      }
+    }
+
     componentWillUnmount() {
       // $FlowFixMe
       if (this.opacityTime) clearTimeout(this.opacityTime)
@@ -60,26 +76,12 @@ class Login extends React.Component<Props, State> {
 
     checkAuthentication = () => {
       const { login, password } = this.state
-      const { actions, authentication } = this.props
+      const { actions } = this.props
       const credentials = {
         login: login.trim(),
         password: password.trim()
       }
-
       actions.checkAuthentication(credentials)
-        .then(() => {
-          const userData = jwtDecode(authentication.token)
-
-          AsyncStorage.setItem(
-            'token',
-            JSON.stringify({
-              ...authentication,
-              userData
-            })
-          )
-
-          Actions.reset('drawerMenu')
-        }).catch(() => { })
     }
 
     render() {
