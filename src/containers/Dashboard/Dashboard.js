@@ -6,8 +6,10 @@
 import * as React from 'react'
 import { StyleSheet, View } from 'react-native'
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
+import Geojson from 'react-native-geojson'
 import common from '../../util/common'
 import { Alert } from '../../components/UI'
+import LimitesJuridicos from '../../assets/LimitesJuridicos.json'
 
 type State = {
     latitude: number,
@@ -48,10 +50,8 @@ class Dashboard extends React.Component<{}, State> {
             loadingIndicatorColor={common.colors.green}
             loadingEnabled
             showsUserLocation
-            showsBuildings={false}
-            showsPointsOfInterest={false}
-            scrollEnabled={false}
-            zoomControlEnabled={false}
+            showsMyLocationButton
+            followsUserLocation
             region={{
               latitude,
               longitude,
@@ -65,6 +65,7 @@ class Dashboard extends React.Component<{}, State> {
                 longitude
               }}
             />
+            <Geojson geojson={LimitesJuridicos} />
           </MapView>
           )}
         </View>
@@ -74,12 +75,16 @@ class Dashboard extends React.Component<{}, State> {
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
+    flex: 1,
     justifyContent: 'flex-end',
-    alignItems: 'center',
+    alignItems: 'flex-end'
   },
   map: {
-    ...StyleSheet.absoluteFillObject
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0
   },
 })
 

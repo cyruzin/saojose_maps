@@ -6,11 +6,13 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
+import Geojson from 'react-native-geojson'
 import { routeFix } from '../../util/helpers'
 import common from '../../util/common'
 import {
   Alert, FloatButton
 } from '../../components/UI'
+import LimitesJuridicos from '../../assets/LimitesJuridicos.json'
 
 type State = {
     latitude: number,
@@ -53,10 +55,8 @@ class CollectPoint extends React.Component<{}, State> {
                         loadingIndicatorColor={common.colors.green}
                         loadingEnabled
                         showsUserLocation
-                        showsBuildings={false}
-                        showsPointsOfInterest={false}
-                        scrollEnabled={false}
-                        zoomControlEnabled={false}
+                        showsMyLocationButton
+                        followsUserLocation
                         region={{
                           latitude,
                           longitude,
@@ -70,6 +70,7 @@ class CollectPoint extends React.Component<{}, State> {
                             longitude
                           }}
                         />
+                        <Geojson geojson={LimitesJuridicos} />
                       </MapView>
                       {latitude !== 37.78825
                             && (
@@ -89,12 +90,16 @@ class CollectPoint extends React.Component<{}, State> {
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
+    flex: 1,
     justifyContent: 'flex-end',
-    alignItems: 'center',
+    alignItems: 'flex-end'
   },
   map: {
-    ...StyleSheet.absoluteFillObject
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0
   },
 })
 
