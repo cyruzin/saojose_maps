@@ -32,8 +32,7 @@ class Dashboard extends React.Component<{}, State> {
           error: ''
         })
       },
-      error => this.setState({ error: error.message }),
-      { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 },)
+      error => this.setState({ error: error.message }))
     }
 
     render() {
@@ -64,6 +63,7 @@ class Dashboard extends React.Component<{}, State> {
                 latitude,
                 longitude
               }}
+              tracksViewChange={false}
             />
             <Geojson geojson={LimitesJuridicos} />
           </MapView>

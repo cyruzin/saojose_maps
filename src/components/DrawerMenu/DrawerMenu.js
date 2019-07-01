@@ -28,7 +28,7 @@ const DrawerMenu = () => {
         </View>
       </TouchableWithoutFeedback>
 
-      <TouchableWithoutFeedback
+      {/* <TouchableWithoutFeedback
         onPress={() => routeFix('geolocation')}
         hitSlop={styles.textHitSlop}
       >
@@ -41,7 +41,7 @@ const DrawerMenu = () => {
           />
           <Text style={styles.text}>Geolocalização</Text>
         </View>
-      </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback> */}
 
       <TouchableWithoutFeedback
         onPress={() => routeFix('collect')}

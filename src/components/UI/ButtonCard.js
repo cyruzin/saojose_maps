@@ -35,9 +35,13 @@ const styles = StyleSheet.create({
   card: {
     alignContent: 'center',
     backgroundColor: common.colors.green,
+    borderWidth: 1,
+    borderColor: common.colors.white,
     height: 150,
+    width: 150,
+    alignSelf: 'center',
     justifyContent: 'center',
-    borderRadius: 5
+    borderRadius: 300
   }
 })
 

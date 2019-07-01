@@ -16,7 +16,7 @@ class Collect extends React.PureComponent {
         >
           <Container style={styles.cardContent}>
             <Icon
-              name="map-pin"
+              name="plus"
               size={30}
               color={common.colors.white}
               style={styles.icon}

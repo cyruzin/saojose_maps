@@ -35,8 +35,7 @@ class CollectPoint extends React.Component<{}, State> {
           error: ''
         })
       },
-      error => this.setState({ error: error.message }),
-      { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 },)
+      error => this.setState({ error: error.message }))
     }
 
     render() {
@@ -57,6 +56,8 @@ class CollectPoint extends React.Component<{}, State> {
                         showsUserLocation
                         showsMyLocationButton
                         followsUserLocation
+                        showBuildings={false}
+                        showPointsOfInterest={false}
                         region={{
                           latitude,
                           longitude,

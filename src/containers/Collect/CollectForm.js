@@ -4,13 +4,15 @@
  */
 
 import React from 'react'
-import { StyleSheet, Picker, ActivityIndicator } from 'react-native'
+import {
+  StyleSheet, Picker, ActivityIndicator, Alert as AlertRN
+} from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import AsyncStorage from '@react-native-community/async-storage'
 import common from '../../util/common'
 import { httpFetch } from '../../util/request'
 import {
-  Container, Text, TextInput, Button, Alert
+  Container, Text, Button, Alert
 } from '../../components/UI'
 
 type State = {
@@ -84,16 +86,28 @@ class CollectForm extends React.Component<Props, State> {
           id_tipo: departamentoID,
           id_usr_coleta: userData.userid
         }
-      }).then(() => Actions.replace('collectList'))
+      }).then(() => this.alert(
+        'Sucesso',
+        'Coleta realizada',
+        () => Actions.replace('collectList')
+      ))
         .catch(error => this.setState({ error }))
+    }
+
+    alert = (title: string, body: string, callback: any) => {
+      AlertRN.alert(
+        title,
+        body,
+        [{ text: 'OK', onPress: callback }],
+        { cancelable: false }
+      )
     }
 
     render() {
       const {
         fetch, coletaDepartamento, departamentoID,
-        coletaTipo, tipoID, error, userData
+        coletaTipo, tipoID, error
       } = this.state
-      const { latitude, longitude } = this.props
 
       return (
         <Container style={styles.container}>
@@ -109,7 +123,7 @@ class CollectForm extends React.Component<Props, State> {
                     <>
                       <Text style={styles.text}>Coleta de Ponto</Text>
 
-                      <TextInput
+                      {/* <TextInput
                         value={`Latitude: ${latitude.toString()}`}
                         placeholderTextColor={common.colors.lightGray}
                         selectionColor={common.colors.green}
@@ -132,7 +146,7 @@ class CollectForm extends React.Component<Props, State> {
                         selectionColor={common.colors.green}
                         editable={false}
                         style={styles.input}
-                      />
+                      /> */}
 
                       <Picker
                         selectedValue={departamentoID}
