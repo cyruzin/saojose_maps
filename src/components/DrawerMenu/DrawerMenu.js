@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import { Actions } from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { resetAuthentication } from '../../redux/ducks/authentication'
-import { routeFix, clearState } from '../../util/helpers'
+import { clearState } from '../../util/helpers'
 import common from '../../util/common'
 import { Container, Text } from '../UI'
 
@@ -43,7 +43,7 @@ const DrawerMenu = () => {
         </View>
       </TouchableWithoutFeedback> */}
 
-      <TouchableWithoutFeedback
+      {/* <TouchableWithoutFeedback
         onPress={() => routeFix('collect')}
         hitSlop={styles.textHitSlop}
       >
@@ -56,7 +56,7 @@ const DrawerMenu = () => {
           />
           <Text style={styles.text}>Coleta de Dados</Text>
         </View>
-      </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback> */}
 
       <TouchableWithoutFeedback
         onPress={() => {
