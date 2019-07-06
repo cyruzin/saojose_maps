@@ -135,7 +135,7 @@ const fabActions = [
     position: 2
   },
   {
-    text: 'Listar Ponto',
+    text: 'Listar Coletas',
     name: 'collectList',
     icon: <Icon
       name="list"
