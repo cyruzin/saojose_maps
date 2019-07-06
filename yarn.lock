@@ -893,6 +893,11 @@
     xcode "^2.0.0"
     xmldoc "^0.4.0"
 
+"@react-native-community/netinfo@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-4.0.0.tgz#fd1fb453a3a9def3d64244a29a16159235f99341"
+  integrity sha512-jpeSQF4hb4fRI03uMmAwXyuObn+AdbL01zGQiUIcR9EDo+eu/q8tc4Z2kuxv2uTCfj+r/fptrElZDLd/ybMzuQ==
+
 "@types/babel__core@^7.1.0":
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.1.tgz#ce9a9e5d92b7031421e1d0d74ae59f572ba48be6"
