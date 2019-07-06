@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, View, Image } from 'react-native'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Actions } from 'react-native-router-flux'
@@ -12,6 +12,7 @@ import jwtDecode from 'jwt-decode'
 import AsyncStorage from '@react-native-community/async-storage'
 import { checkAuthentication } from '../../redux/ducks/authentication'
 import common from '../../util/common'
+import Logo from '../../assets/icon.png'
 import {
   Container, TextInput, Button, Text
 } from '../../components/UI'
@@ -92,7 +93,14 @@ class Login extends React.Component<Props, State> {
       return (
         <Container style={styles.container}>
           <View style={{ ...styles.inputBox, opacity }}>
-            <Text style={styles.title}>São José Mapas</Text>
+
+            <View style={styles.imageBox}>
+              <Image
+                style={styles.image}
+                source={Logo}
+              />
+              <Text style={styles.title}>SÃO JOSÉ MAPAS</Text>
+            </View>
 
             {!!error && <Text style={styles.errorMsg}>{error}</Text>}
 
@@ -132,12 +140,11 @@ const styles = StyleSheet.create({
     backgroundColor: common.colors.dark
   },
   title: {
-    fontSize: 36,
+    fontSize: 26,
     opacity: 50,
-    fontWeight: 'bold',
     color: common.colors.white,
     textAlign: 'center',
-    marginBottom: 50
+    marginTop: 15
   },
   errorMsg: {
     marginBottom: 20,
@@ -160,6 +167,15 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 30,
     borderRadius: 50
+  },
+  imageBox: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 70
+  },
+  image: {
+    width: 100,
+    height: 100
   }
 })
 

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import { Actions } from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { resetAuthentication } from '../../redux/ducks/authentication'
-import { clearState } from '../../util/helpers'
+import { routeFix, clearState } from '../../util/helpers'
 import common from '../../util/common'
 import { Container, Text } from '../UI'
 
@@ -28,20 +28,20 @@ const DrawerMenu = () => {
         </View>
       </TouchableWithoutFeedback>
 
-      {/* <TouchableWithoutFeedback
-        onPress={() => routeFix('geolocation')}
+      <TouchableWithoutFeedback
+        onPress={() => routeFix('collectList')}
         hitSlop={styles.textHitSlop}
       >
         <View style={styles.textContainer}>
           <Icon
             style={styles.icon}
-            name="map-marker"
+            name="list"
             size={20}
             color={common.colors.white}
           />
-          <Text style={styles.text}>Geolocalização</Text>
+          <Text style={styles.text}>Listar Coletas</Text>
         </View>
-      </TouchableWithoutFeedback> */}
+      </TouchableWithoutFeedback>
 
       {/* <TouchableWithoutFeedback
         onPress={() => routeFix('collect')}
