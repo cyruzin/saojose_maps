@@ -6,8 +6,11 @@
 import * as React from 'react'
 import { StyleSheet, View } from 'react-native'
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
+import Icon from 'react-native-vector-icons/FontAwesome'
+import { FloatingAction } from 'react-native-floating-action'
 import Geojson from 'react-native-geojson'
 import common from '../../util/common'
+import { routeFix } from '../../util/helpers'
 import { Alert } from '../../components/UI'
 import LimitesJuridicos from '../../assets/LimitesJuridicos.json'
 
@@ -19,12 +22,16 @@ type State = {
 
 class Dashboard extends React.Component<{}, State> {
     state = {
-      latitude: 37.78825,
-      longitude: -122.4324,
+      latitude: 0,
+      longitude: 0,
       error: ''
     }
 
     componentDidMount() {
+      this.setPosition()
+    }
+
+    setPosition = () => {
       global.navigator.geolocation.getCurrentPosition((position) => {
         this.setState({
           latitude: position.coords.latitude,
@@ -44,6 +51,7 @@ class Dashboard extends React.Component<{}, State> {
 
           {error === '' && (
           <MapView
+            mapType="hybrid"
             style={styles.map}
             provider={PROVIDER_GOOGLE}
             loadingIndicatorColor={common.colors.green}
@@ -51,6 +59,7 @@ class Dashboard extends React.Component<{}, State> {
             showsUserLocation
             showsMyLocationButton
             followsUserLocation
+            // onMarkerDrag={() => this.setPosition()}
             region={{
               latitude,
               longitude,
@@ -59,6 +68,7 @@ class Dashboard extends React.Component<{}, State> {
             }}
           >
             <Marker
+              // draggable
               coordinate={{
                 latitude,
                 longitude
@@ -68,6 +78,14 @@ class Dashboard extends React.Component<{}, State> {
             <Geojson geojson={LimitesJuridicos} />
           </MapView>
           )}
+          {latitude !== 0 && (
+          <FloatingAction
+            actions={fabActions}
+            color={common.colors.green}
+            onPressItem={name => routeFix(name, this.state)}
+          />
+          )
+          }
         </View>
       )
     }
@@ -86,6 +104,48 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0
   },
+  icon: {
+    textAlign: 'center'
+  }
 })
+
+const fabActions = [
+  {
+    text: 'Coletar Ponto',
+    name: 'collectForm',
+    icon: <Icon
+      name="map-pin"
+      size={22}
+      color={common.colors.white}
+      style={styles.icon}
+    />,
+    color: common.colors.green,
+    position: 1
+  },
+  {
+    text: 'Coletar Área',
+    name: 'collectArea',
+    icon: <Icon
+      name="street-view"
+      size={22}
+      color={common.colors.white}
+      style={styles.icon}
+    />,
+    color: common.colors.green,
+    position: 2
+  },
+  {
+    text: 'Listar Ponto',
+    name: 'collectList',
+    icon: <Icon
+      name="list"
+      size={22}
+      color={common.colors.white}
+      style={styles.icon}
+    />,
+    color: common.colors.green,
+    position: 3
+  }
+]
 
 export default Dashboard
