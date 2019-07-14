@@ -116,7 +116,7 @@ Coleta #
                     {list.longitude || empty}
                   </Text>
                   <Text style={styles.text}>
-                                        Descrição:
+                                        Observação:
                     {' '}
                     {list.descricao || empty}
                   </Text>
