@@ -6,9 +6,12 @@
 import React from 'react'
 import { StyleSheet, ScrollView, ActivityIndicator } from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
+import debounce from 'lodash/debounce'
 import common from '../../util/common'
 import { httpFetch } from '../../util/request'
-import { Container, Text, Alert } from '../../components/UI'
+import {
+  Container, Text, Alert, TextInput
+} from '../../components/UI'
 
 type State = {
     fetch: boolean,
@@ -33,7 +36,9 @@ type State = {
 }
 
 class CollectList extends React.Component<{}, State> {
-    state = {
+  constructor(props: any) {
+    super(props)
+    this.state = {
       fetch: false,
       data: [{
         id: '',
@@ -55,9 +60,12 @@ class CollectList extends React.Component<{}, State> {
       error: ''
     }
 
-    componentDidMount() {
-      this.getUserData()
-    }
+    this.searchHandler = debounce(this.searchHandler, 800)
+  }
+
+  componentDidMount() {
+    this.getUserData()
+  }
 
       getUserData = () => {
         AsyncStorage.getItem('token')
@@ -67,13 +75,30 @@ class CollectList extends React.Component<{}, State> {
               this.setState({ userData: data.userData })
             }
           })
-          .then(() => {
-            this.setState({ fetch: true })
-            const { userData } = this.state
-            httpFetch({ url: `/coleta/${userData.userid}/minhaColeta`, method: 'GET' })
-              .then(response => this.setState({ data: response.data, fetch: false }))
-              .catch(error => this.setState({ error, fetch: false }))
+          .then(() => this.fetchCollect())
+      }
+
+      fetchCollect = () => {
+        this.setState({ fetch: true })
+        const { userData } = this.state
+        httpFetch({ url: `/coleta/${userData.userid}/minhaColeta`, method: 'GET' })
+          .then(response => this.setState({ data: response.data, fetch: false }))
+          .catch(error => this.setState({ error, fetch: false }))
+      }
+
+      searchHandler = (searchKeyword: string) => {
+        if (searchKeyword === '') return false
+
+        return this.setState({ fetch: true }, () => {
+          const { userData } = this.state
+          httpFetch({
+            url: `/coleta/${userData.userid}/levantamento/buscaColeta`,
+            method: 'post',
+            data: { tipo: encodeURI(searchKeyword.trim()) }
           })
+            .then(response => this.setState({ data: response.data, fetch: false }))
+            .catch(error => this.setState({ error, fetch: false }))
+        })
       }
 
       render() {
@@ -83,6 +108,17 @@ class CollectList extends React.Component<{}, State> {
         return (
           <Container style={styles.container}>
             <ScrollView>
+              {error === '' && (
+              <TextInput
+                placeholder="Busca"
+                editable={!fetch}
+                placeholderTextColor={common.colors.lightGray}
+                selectionColor={common.colors.green}
+                style={styles.input}
+                onChangeText={id => this.searchHandler(id)}
+              />
+              )}
+
               {fetch && <ActivityIndicator color={common.colors.white} />}
 
               {!fetch && error !== '' && <Alert color={common.colors.red} msg={error} />}
@@ -197,7 +233,16 @@ const styles = StyleSheet.create({
   text: {
     marginBottom: 5,
     color: common.colors.white
-  }
+  },
+  input: {
+    marginBottom: 20,
+    borderColor: common.colors.green,
+    color: common.colors.white,
+    borderBottomWidth: 1,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    paddingLeft: 15,
+  },
 })
 
 export default CollectList
