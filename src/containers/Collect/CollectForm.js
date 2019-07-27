@@ -12,7 +12,7 @@ import AsyncStorage from '@react-native-community/async-storage'
 import common from '../../util/common'
 import { httpFetch } from '../../util/request'
 import {
-  Container, Text, Button, Alert
+  Container, Text, Button, Alert, TextInput
 } from '../../components/UI'
 
 type State = {
@@ -22,6 +22,7 @@ type State = {
     coletaTipo: Array<Object>,
     tipoID: number | string,
     userData: Object,
+    descricao: string,
     error: string
 }
 
@@ -38,6 +39,7 @@ class CollectForm extends React.Component<Props, State> {
       coletaTipo: [],
       tipoID: '',
       userData: {},
+      descricao: '',
       error: ''
     }
 
@@ -71,7 +73,9 @@ class CollectForm extends React.Component<Props, State> {
     }
 
     sendData = () => {
-      const { departamentoID, tipoID, userData } = this.state
+      const {
+        departamentoID, tipoID, userData, descricao
+      } = this.state
       const { latitude, longitude } = this.props
 
       if (departamentoID === '' || tipoID === '') return
@@ -84,7 +88,8 @@ class CollectForm extends React.Component<Props, State> {
           longitude,
           id_departamento: departamentoID,
           id_tipo: departamentoID,
-          id_usr_coleta: userData.userid
+          id_usr_coleta: userData.userid,
+          descricao
         }
       }).then(() => this.alert(
         'Sucesso',
@@ -189,6 +194,16 @@ class CollectForm extends React.Component<Props, State> {
                           />
                         ))}
                       </Picker>
+
+                      <TextInput
+                        placeholder="Observação"
+                        placeholderTextColor={common.colors.lightGray}
+                        selectionColor={common.colors.green}
+                        style={styles.input}
+                        multiline
+                        numberOfLines={5}
+                        onChangeText={descricao => this.setState({ descricao })}
+                      />
 
                       <Button
                         title="ENVIAR"

@@ -5,9 +5,13 @@
 
 import React from 'react'
 import { StyleSheet, ScrollView, ActivityIndicator } from 'react-native'
+import AsyncStorage from '@react-native-community/async-storage'
+import debounce from 'lodash/debounce'
 import common from '../../util/common'
 import { httpFetch } from '../../util/request'
-import { Container, Text, Alert } from '../../components/UI'
+import {
+  Container, Text, Alert, TextInput
+} from '../../components/UI'
 
 type State = {
     fetch: boolean,
@@ -27,11 +31,14 @@ type State = {
         id_tipo: number | string,
         dt_cadastro: string,
     }],
+    userData: Object,
     error: string
 }
 
 class CollectList extends React.Component<{}, State> {
-    state = {
+  constructor(props: any) {
+    super(props)
+    this.state = {
       fetch: false,
       data: [{
         id: '',
@@ -49,109 +56,155 @@ class CollectList extends React.Component<{}, State> {
         id_tipo: '',
         dt_cadastro: '',
       }],
+      userData: {},
       error: ''
     }
 
-    componentDidMount() {
-      this.setState({ fetch: true })
+    this.searchHandler = debounce(this.searchHandler, 800)
+  }
 
-      httpFetch({ url: '/coleta', method: 'GET' })
-        .then(response => this.setState({ data: response.data, fetch: false }))
-        .catch(error => this.setState({ error, fetch: false }))
-    }
+  componentDidMount() {
+    this.getUserData()
+  }
 
-    render() {
-      const { fetch, data, error } = this.state
-      const empty = '-'
+      getUserData = () => {
+        AsyncStorage.getItem('token')
+          .then((value) => {
+            if (value !== null) {
+              const data = JSON.parse(value)
+              this.setState({ userData: data.userData })
+            }
+          })
+          .then(() => this.fetchCollect())
+      }
 
-      return (
-        <Container style={styles.container}>
-          <ScrollView>
-            {fetch && <ActivityIndicator color={common.colors.white} />}
+      fetchCollect = () => {
+        this.setState({ fetch: true })
+        const { userData } = this.state
+        httpFetch({ url: `/coleta/${userData.userid}/minhaColeta`, method: 'GET' })
+          .then(response => this.setState({ data: response.data, fetch: false }))
+          .catch(error => this.setState({ error, fetch: false }))
+      }
 
-            {!fetch && error !== '' && <Alert color={common.colors.red} msg={error} />}
+      searchHandler = (searchKeyword: string) => {
+        if (searchKeyword === '') return false
 
-            {!fetch && error === '' && data.map(list => (
-              <Container key={list.id} style={styles.content}>
-                <Container style={styles.titleBox}>
-                  <Text style={styles.title}>
+        return this.setState({ fetch: true }, () => {
+          const { userData } = this.state
+          httpFetch({
+            url: `/coleta/${userData.userid}/levantamento/buscaColeta`,
+            method: 'POST',
+            params: { tipo: encodeURI(searchKeyword.trim()) }
+          })
+            .then((response) => {
+              this.setState({ data: response.data, fetch: false })
+            }).catch(error => this.setState({ error, fetch: false }))
+        })
+      }
+
+      render() {
+        const { fetch, data, error } = this.state
+        const empty = '-'
+
+        return (
+          <Container style={styles.container}>
+            <ScrollView>
+              {error === '' && (
+              <TextInput
+                placeholder="Busca"
+                editable={!fetch}
+                placeholderTextColor={common.colors.lightGray}
+                selectionColor={common.colors.green}
+                style={styles.input}
+                onChangeText={id => this.searchHandler(id)}
+              />
+              )}
+
+              {fetch && <ActivityIndicator color={common.colors.white} />}
+
+              {!fetch && error !== '' && <Alert color={common.colors.red} msg={error} />}
+
+              {!fetch && error === '' && data.map(list => (
+                <Container key={list.id} style={styles.content}>
+                  <Container style={styles.titleBox}>
+                    <Text style={styles.title}>
 Coleta #
-                    {list.id}
-                  </Text>
-                </Container>
-                <Container style={styles.textBox}>
-                  <Text style={styles.text}>
+                      {list.id}
+                    </Text>
+                  </Container>
+                  <Container style={styles.textBox}>
+                    <Text style={styles.text}>
                                         Classificação:
-                    {' '}
-                    {list.classificacao || empty}
-                  </Text>
-                  <Text style={styles.text}>
+                      {' '}
+                      {list.classificacao || empty}
+                    </Text>
+                    <Text style={styles.text}>
                                         Uso Solo:
-                    {' '}
-                    {list.uso_solo || empty}
-                  </Text>
-                  <Text style={styles.text}>
+                      {' '}
+                      {list.uso_solo || empty}
+                    </Text>
+                    <Text style={styles.text}>
                                         Imovel:
-                    {' '}
-                    {list.imovel || empty}
-                  </Text>
-                  <Text style={styles.text}>
+                      {' '}
+                      {list.imovel || empty}
+                    </Text>
+                    <Text style={styles.text}>
                                         Área HA:
-                    {' '}
-                    {list.area_ha || empty}
-                  </Text>
-                  <Text style={styles.text}>
+                      {' '}
+                      {list.area_ha || empty}
+                    </Text>
+                    <Text style={styles.text}>
                                         Bloco:
-                    {' '}
-                    {list.bloco || empty}
-                  </Text>
-                  <Text style={styles.text}>
+                      {' '}
+                      {list.bloco || empty}
+                    </Text>
+                    <Text style={styles.text}>
                                         Latitude:
-                    {' '}
-                    {list.latitude || empty}
-                  </Text>
-                  <Text style={styles.text}>
+                      {' '}
+                      {list.latitude || empty}
+                    </Text>
+                    <Text style={styles.text}>
                                         Longitude:
-                    {' '}
-                    {list.longitude || empty}
-                  </Text>
-                  <Text style={styles.text}>
-                                        Descrição:
-                    {' '}
-                    {list.descricao || empty}
-                  </Text>
-                  <Text style={styles.text}>
+                      {' '}
+                      {list.longitude || empty}
+                    </Text>
+                    <Text style={styles.text}>
+                                        Observação:
+                      {' '}
+                      {list.descricao || empty}
+                    </Text>
+                    <Text style={styles.text}>
                                         ID USR Coleta:
-                    {' '}
-                    {list.id_usr_coleta || empty}
-                  </Text>
-                  <Text style={styles.text}>
+                      {' '}
+                      {list.id_usr_coleta || empty}
+                    </Text>
+                    <Text style={styles.text}>
                                         ID Departamento:
-                    {' '}
-                    {list.id_departamento || empty}
-                  </Text>
-                  <Text style={styles.text}>
+                      {' '}
+                      {list.id_departamento || empty}
+                    </Text>
+                    <Text style={styles.text}>
                                         ID Pendência:
-                    {' '}
-                    {list.id_pendencia || empty}
-                  </Text>
-                  <Text style={styles.text}>
+                      {' '}
+                      {list.id_pendencia || empty}
+                    </Text>
+                    <Text style={styles.text}>
                                         ID Tipo:
-                    {' '}
-                    {list.id_tipo || empty}
-                  </Text>
-                  <Text style={styles.text}>
+                      {' '}
+                      {list.id_tipo || empty}
+                    </Text>
+                    <Text style={styles.text}>
                                         Data:
-                    {' '}
-                    {list.dt_cadastro || empty}
-                  </Text>
+                      {' '}
+                      {list.dt_cadastro || empty}
+                    </Text>
+                  </Container>
                 </Container>
-              </Container>
-            ))}
-          </ScrollView>
-        </Container>
-      )
-    }
+              ))}
+            </ScrollView>
+          </Container>
+        )
+      }
 }
 
 const styles = StyleSheet.create({
@@ -181,7 +234,16 @@ const styles = StyleSheet.create({
   text: {
     marginBottom: 5,
     color: common.colors.white
-  }
+  },
+  input: {
+    marginBottom: 20,
+    borderColor: common.colors.green,
+    color: common.colors.white,
+    borderBottomWidth: 1,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    paddingLeft: 15,
+  },
 })
 
 export default CollectList
