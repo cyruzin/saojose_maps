@@ -93,11 +93,12 @@ class CollectList extends React.Component<{}, State> {
           const { userData } = this.state
           httpFetch({
             url: `/coleta/${userData.userid}/levantamento/buscaColeta`,
-            method: 'post',
-            data: { tipo: encodeURI(searchKeyword.trim()) }
+            method: 'POST',
+            params: { tipo: encodeURI(searchKeyword.trim()) }
           })
-            .then(response => this.setState({ data: response.data, fetch: false }))
-            .catch(error => this.setState({ error, fetch: false }))
+            .then((response) => {
+              this.setState({ data: response.data, fetch: false })
+            }).catch(error => this.setState({ error, fetch: false }))
         })
       }
 
