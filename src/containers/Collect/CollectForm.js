@@ -101,9 +101,9 @@ class CollectForm extends React.Component<Props, State> {
         id_tipo: departamentoID,
         id_usr_coleta: userData.userid,
         descricao,
-        img1: fotos[0] ? fotos[0].base64 : '',
-        img2: fotos[1] ? fotos[1].base64 : '',
-        img3: fotos[2] ? fotos[2].base64 : ''
+        img1: fotos[0] ? fotos[0].uri : '', // Salvando a uri por enquanto
+        img2: fotos[1] ? fotos[1].uri : '',
+        img3: fotos[2] ? fotos[2].uri : ''
       }
     }).then(() => {
       this.setState({ fetch: false })
