@@ -5,8 +5,9 @@
 
 import React from 'react'
 import {
-  StyleSheet, ScrollView, ActivityIndicator, AsyncStorage
+  StyleSheet, ScrollView, ActivityIndicator
 } from 'react-native'
+import AsyncStorage from '@react-native-community/async-storage'
 import debounce from 'lodash/debounce'
 import common from '../../util/common'
 import { httpRequest } from '../../util/request'

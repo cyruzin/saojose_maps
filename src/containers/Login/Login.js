@@ -5,8 +5,9 @@
 
 import React from 'react'
 import {
-  StyleSheet, View, Image, AsyncStorage
+  StyleSheet, View, Image
 } from 'react-native'
+import AsyncStorage from '@react-native-community/async-storage'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Actions } from 'react-native-router-flux'

@@ -5,10 +5,10 @@
 
 import React from 'react'
 import {
-  StyleSheet, Picker, ActivityIndicator, Alert as AlertRN,
-  AsyncStorage
+  StyleSheet, Picker, ActivityIndicator, Alert as AlertRN
 } from 'react-native'
 import { Actions } from 'react-native-router-flux'
+import AsyncStorage from '@react-native-community/async-storage'
 import common from '../../util/common'
 import { httpRequest } from '../../util/request'
 import {

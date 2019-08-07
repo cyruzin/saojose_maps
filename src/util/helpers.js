@@ -1,5 +1,5 @@
 import { Actions } from 'react-native-router-flux'
-import { AsyncStorage } from 'react-native'
+import AsyncStorage from '@react-native-community/async-storage'
 
 /**
  * Go to a new scene without duplication.
