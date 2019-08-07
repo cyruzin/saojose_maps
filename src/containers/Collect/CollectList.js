@@ -88,28 +88,23 @@ class CollectList extends React.Component<{}, State> {
     this.setState({ fetch: true })
     const { userData } = this.state
     httpRequest(`/coleta/${userData.userid}/minhaColeta`, { method: 'GET' })
-      .then((response) => {
-        console.log(response)
-        this.setState({ data: response, fetch: false })
-      })
+      .then(response => this.setState({ data: response, fetch: false }))
       .catch(error => this.setState({ error, fetch: false }))
   };
 
   searchHandler = (searchKeyword: string) => {
-    if (searchKeyword === '') { return false }
+    if (searchKeyword === '') { return this.fetchCollect() }
 
-    return this.setState({ fetch: true }, () => {
-      const { userData } = this.state
-      httpRequest(`/coleta/${userData.userid}/levantamento/buscaColeta`, {
-        method: 'POST',
-        body: { tipo: encodeURI(searchKeyword.trim()) }
-      })
-        .then((response) => {
-          this.setState({ data: response, fetch: false })
-        })
-        .catch(error => this.setState({ error, fetch: false }))
-    })
-  };
+    this.setState({ fetch: true })
+
+    const { userData } = this.state
+
+    return httpRequest(`/coleta/${userData.userid}/buscaColeta`, {
+      method: 'POST',
+      body: { query: searchKeyword.trim() }
+    }).then(response => this.setState({ data: response, fetch: false }))
+      .catch(error => this.setState({ error, fetch: false }))
+  }
 
   render() {
     const { fetch, data, error } = this.state
@@ -129,6 +124,11 @@ class CollectList extends React.Component<{}, State> {
             />
           )}
 
+          {!fetch && data === null
+            && (
+              <Text style={styles.searchNoResult}>Nenhum Resultado</Text>
+            )}
+
           {fetch && <ActivityIndicator color={common.colors.white} />}
 
           {!fetch && error !== '' && (
@@ -137,11 +137,11 @@ class CollectList extends React.Component<{}, State> {
 
           {!fetch
             && error === ''
-            && data.map(list => (
+            && data && data.map(list => (
               <Container key={list.id} style={styles.content}>
                 <Container style={styles.titleBox}>
                   <Text style={styles.title}>
-Coleta #
+                    Coleta #
                     {list.id}
                   </Text>
                 </Container>
@@ -167,7 +167,7 @@ Coleta #
                     {list.area_ha || empty}
                   </Text>
                   <Text style={styles.text}>
-Bloco:
+                    Bloco:
                     {' '}
                     {list.bloco || empty}
                   </Text>
@@ -213,7 +213,7 @@ Bloco:
                   </Text>
                 </Container>
               </Container>
-            ))}
+          ))}
         </ScrollView>
       </Container>
     )
@@ -247,6 +247,13 @@ const styles = StyleSheet.create({
   text: {
     marginBottom: 5,
     color: common.colors.white
+  },
+  searchNoResult: {
+    marginTop: 20,
+    color: common.colors.white,
+    fontSize: 16,
+    textAlign: 'center',
+    fontWeight: 'bold'
   },
   input: {
     marginBottom: 20,
