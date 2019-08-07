@@ -18,6 +18,7 @@ import LimitesJuridicos from '../../assets/LimitesJuridicos.json'
 type State = {
   latitude: number,
   longitude: number,
+  marginBottom: number,
   error: string
 };
 
@@ -25,12 +26,15 @@ class Dashboard extends React.Component<{}, State> {
   state = {
     latitude: 0,
     longitude: 0,
+    marginBottom: 1,
     error: ''
   };
 
   componentDidMount() {
     this.setPosition()
   }
+
+  onMapReady = () => this.setState({ marginBottom: 0 })
 
   setPosition = () => {
     Geolocation.getCurrentPosition(
@@ -46,7 +50,9 @@ class Dashboard extends React.Component<{}, State> {
   };
 
   render() {
-    const { latitude, longitude, error } = this.state
+    const {
+      latitude, longitude, marginBottom, error
+    } = this.state
 
     return (
       <View style={styles.container}>
@@ -55,7 +61,8 @@ class Dashboard extends React.Component<{}, State> {
         {error === '' && (
           <MapView
             mapType="hybrid"
-            style={styles.map}
+            onMapReady={this.onMapReady}
+            style={{ ...styles.map, marginBottom }}
             provider={PROVIDER_GOOGLE}
             loadingIndicatorColor={common.colors.green}
             loadingEnabled
@@ -80,14 +87,17 @@ class Dashboard extends React.Component<{}, State> {
             />
             <Geojson geojson={LimitesJuridicos} />
           </MapView>
-        )}
-        {latitude !== 0 && (
-          <FloatingAction
-            actions={fabActions}
-            color={common.colors.green}
-            onPressItem={name => routeFix(name, this.state)}
-          />
-        )}
+        )
+        }
+        {
+          latitude !== 0 && (
+            <FloatingAction
+              actions={fabActions}
+              color={common.colors.green}
+              onPressItem={name => routeFix(name, this.state)}
+            />
+          )
+        }
       </View>
     )
   }
