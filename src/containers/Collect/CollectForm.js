@@ -6,7 +6,7 @@
 import React from 'react'
 import {
   StyleSheet, Picker, Alert as AlertRN,
-  TouchableOpacity, View, Image
+  TouchableOpacity, View, Image, ActivityIndicator
 } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import AsyncStorage from '@react-native-community/async-storage'
@@ -19,6 +19,7 @@ import {
 
 type State = {
   fetch: boolean,
+  fetchSelect: boolean,
   showCamera: boolean,
   fotos: Array<Object>,
   coletaDepartamento: Array<Object>,
@@ -38,6 +39,7 @@ type Props = {
 class CollectForm extends React.Component<Props, State> {
   state = {
     fetch: false,
+    fetchSelect: false,
     showCamera: false,
     fotos: [],
     coletaDepartamento: [],
@@ -55,7 +57,7 @@ class CollectForm extends React.Component<Props, State> {
   }
 
   fetchCollectData = () => {
-    this.setState({ fetch: true })
+    this.setState({ fetchSelect: true })
     Promise.all([
       httpRequest('/coletaDepart', { method: 'GET' }),
       httpRequest('/coletaTipo', { method: 'GET' })
@@ -63,9 +65,9 @@ class CollectForm extends React.Component<Props, State> {
       this.setState({
         coletaDepartamento,
         coletaTipo,
-        fetch: false
+        fetchSelect: false
       })
-    }).catch(error => this.setState({ error, fetch: false }))
+    }).catch(error => this.setState({ error, fetchSelect: false }))
   }
 
   getUserData = () => {
@@ -99,9 +101,9 @@ class CollectForm extends React.Component<Props, State> {
         id_tipo: departamentoID,
         id_usr_coleta: userData.userid,
         descricao,
-        img1: fotos[0].base64 || '',
-        img2: fotos[1].base64 || '',
-        img3: fotos[2].base64 || ''
+        img1: fotos[0] ? fotos[0].base64 : '',
+        img2: fotos[1] ? fotos[1].base64 : '',
+        img3: fotos[2] ? fotos[2].base64 : ''
       }
     }).then(() => {
       this.setState({ fetch: false })
@@ -150,16 +152,20 @@ class CollectForm extends React.Component<Props, State> {
 
   render() {
     const {
-      fetch, showCamera, fotos, coletaDepartamento, departamentoID,
+      fetch, fetchSelect, showCamera, fotos, coletaDepartamento, departamentoID,
       coletaTipo, tipoID, descricao, error
     } = this.state
 
     return (
       <Container style={styles.container}>
 
-        {!fetch && error !== '' && <Alert color={common.colors.red} msg={error} />}
+        {fetchSelect
+        && <ActivityIndicator style={styles.activityIndicator} color={common.colors.white} />}
 
-        {error === '' && !showCamera && (
+        {!fetchSelect && !fetch && error !== ''
+        && <Alert color={common.colors.red} msg={error} />}
+
+        {!fetchSelect && error === '' && !showCamera && (
         <>
           <Text style={styles.text}>Coleta de Ponto</Text>
 
