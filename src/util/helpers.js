@@ -1,5 +1,5 @@
 import { Actions } from 'react-native-router-flux'
-import AsyncStorage from '@react-native-community/async-storage'
+import { AsyncStorage } from 'react-native'
 
 /**
  * Go to a new scene without duplication.
@@ -34,18 +34,19 @@ export const onBackPress = () => {
 }
 
 export const loadState = () => {
-  AsyncStorage.getItem('token')
-    .then((value) => {
-      if (value !== null) {
-        const data = JSON.parse(value)
-        if (data.userData.expires < new Date().getTime() / 1000) {
-          clearState()
-          return false
-        }
-        if (data.authorized) Actions.reset('drawerMenu')
+  AsyncStorage.getItem('token').then((value) => {
+    if (value !== null) {
+      const data = JSON.parse(value)
+      if (data.userData.expires < new Date().getTime() / 1000) {
+        clearState()
+        return false
       }
-      return false
-    })
+      if (data.authorized) {
+        Actions.reset('drawerMenu')
+      }
+    }
+    return false
+  })
 }
 
 export const clearState = () => AsyncStorage.removeItem('token')

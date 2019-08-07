@@ -3,17 +3,17 @@
  * @format
  */
 
-import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import Geolocation from "@react-native-community/geolocation";
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { FloatingAction } from 'react-native-floating-action';
-import Geojson from 'react-native-geojson';
-import common from '../../util/common';
-import { routeFix } from '../../util/helpers';
-import { Alert } from '../../components/UI';
-import LimitesJuridicos from '../../assets/LimitesJuridicos.json';
+import * as React from 'react'
+import { StyleSheet, View } from 'react-native'
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
+import Geolocation from '@react-native-community/geolocation'
+import Icon from 'react-native-vector-icons/FontAwesome'
+import { FloatingAction } from 'react-native-floating-action'
+import Geojson from 'react-native-geojson'
+import common from '../../util/common'
+import { routeFix } from '../../util/helpers'
+import { Alert } from '../../components/UI'
+import LimitesJuridicos from '../../assets/LimitesJuridicos.json'
 
 type State = {
   latitude: number,
@@ -29,24 +29,24 @@ class Dashboard extends React.Component<{}, State> {
   };
 
   componentDidMount() {
-    this.setPosition();
+    this.setPosition()
   }
 
   setPosition = () => {
     Geolocation.getCurrentPosition(
-      position => {
+      (position) => {
         this.setState({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
           error: ''
-        });
+        })
       },
       error => this.setState({ error: error.message })
-    );
+    )
   };
 
   render() {
-    const { latitude, longitude, error } = this.state;
+    const { latitude, longitude, error } = this.state
 
     return (
       <View style={styles.container}>
@@ -89,7 +89,7 @@ class Dashboard extends React.Component<{}, State> {
           />
         )}
       </View>
-    );
+    )
   }
 }
 
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   icon: {
     textAlign: 'center'
   }
-});
+})
 
 const fabActions = [
   {
@@ -154,6 +154,6 @@ const fabActions = [
     color: common.colors.green,
     position: 3
   }
-];
+]
 
-export default Dashboard;
+export default Dashboard

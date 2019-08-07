@@ -5,12 +5,12 @@
 
 import React from 'react'
 import {
-  StyleSheet, Picker, ActivityIndicator, Alert as AlertRN
+  StyleSheet, Picker, ActivityIndicator, Alert as AlertRN,
+  AsyncStorage
 } from 'react-native'
 import { Actions } from 'react-native-router-flux'
-import AsyncStorage from '@react-native-community/async-storage'
 import common from '../../util/common'
-import { httpFetch } from '../../util/request'
+import { httpRequest } from '../../util/request'
 import {
   Container, Text, Button, Alert, TextInput
 } from '../../components/UI'
@@ -51,12 +51,12 @@ class CollectForm extends React.Component<Props, State> {
     fetchCollectData = () => {
       this.setState({ fetch: true })
       Promise.all([
-        httpFetch({ method: 'GET', url: '/coletaDepart' }),
-        httpFetch({ method: 'GET', url: '/coletaTipo' })
+        httpRequest('/coletaDepart', { method: 'GET' }),
+        httpRequest('/coletaTipo', { method: 'GET' })
       ]).then(([coletaDepartamento, coletaTipo]) => {
         this.setState({
-          coletaDepartamento: coletaDepartamento.data,
-          coletaTipo: coletaTipo.data,
+          coletaDepartamento,
+          coletaTipo,
           fetch: false
         })
       }).catch(error => this.setState({ error, fetch: false }))
@@ -80,10 +80,9 @@ class CollectForm extends React.Component<Props, State> {
 
       if (departamentoID === '' || tipoID === '') return
 
-      httpFetch({
+      httpRequest('/coleta', {
         method: 'POST',
-        url: '/coleta',
-        data: {
+        body: {
           latitude,
           longitude,
           id_departamento: departamentoID,
