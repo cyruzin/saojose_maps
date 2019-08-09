@@ -11,6 +11,7 @@ import {
 import { Actions } from 'react-native-router-flux'
 import AsyncStorage from '@react-native-community/async-storage'
 import { RNCamera } from 'react-native-camera'
+import Icon from 'react-native-vector-icons/FontAwesome'
 import common from '../../util/common'
 import { httpRequest } from '../../util/request'
 import {
@@ -217,7 +218,7 @@ class CollectForm extends React.Component<Props, State> {
             selectionColor={common.colors.green}
             style={styles.input}
             multiline
-            numberOfLines={5}
+            numberOfLines={2}
             value={descricao}
             onChangeText={obs => this.setState({ descricao: obs })}
           />
@@ -228,11 +229,21 @@ class CollectForm extends React.Component<Props, State> {
               style={{
                 color: common.colors.white,
                 padding: 15,
-                fontSize: 14,
-                fontWeight: 'bold'
+              }}
+              hitSlop={{
+                top: 30,
+                left: 30,
+                bottom: 30,
+                right: 30
               }}
             >
-Bater Foto
+              <Icon
+                name="camera"
+                size={16}
+                color={common.colors.white}
+              />
+              {'  '}
+              Capturar Imagem
             </Text>
           )
             : (

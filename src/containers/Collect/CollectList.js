@@ -187,22 +187,22 @@ class CollectList extends React.Component<{}, State> {
                     {list.descricao || empty}
                   </Text>
                   <Text style={styles.text}>
-                    ID USR Coleta:
+                    Usuário Coleta:
                     {' '}
                     {list.id_usr_coleta || empty}
                   </Text>
                   <Text style={styles.text}>
-                    ID Departamento:
+                    Departamento:
                     {' '}
                     {list.id_departamento || empty}
                   </Text>
                   <Text style={styles.text}>
-                    ID Pendência:
+                    Pendência:
                     {' '}
                     {list.id_pendencia || empty}
                   </Text>
                   <Text style={styles.text}>
-                    ID Tipo:
+                    Tipo:
                     {' '}
                     {list.id_tipo || empty}
                   </Text>

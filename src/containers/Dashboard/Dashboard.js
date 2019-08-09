@@ -47,7 +47,7 @@ class Dashboard extends React.Component<{}, State> {
       },
       error => this.setState({ error: error.message })
     )
-  };
+  }
 
   render() {
     const {
@@ -69,7 +69,12 @@ class Dashboard extends React.Component<{}, State> {
             showsUserLocation
             showsMyLocationButton
             followsUserLocation
-            // onMarkerDrag={() => this.setPosition()}
+            onMarkerDragEnd={(event) => {
+              this.setState({
+                latitude: event.nativeEvent.coordinate.latitude,
+                longitude: event.nativeEvent.coordinate.longitude
+              })
+            }}
             region={{
               latitude,
               longitude,
@@ -78,7 +83,7 @@ class Dashboard extends React.Component<{}, State> {
             }}
           >
             <Marker
-              // draggable
+              draggable
               coordinate={{
                 latitude,
                 longitude
