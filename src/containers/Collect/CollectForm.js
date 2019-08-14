@@ -18,11 +18,13 @@ import {
   Container, Text, Button, Alert, TextInput
 } from '../../components/UI'
 
+
 type State = {
   fetch: boolean,
   fetchSelect: boolean,
   showCamera: boolean,
   fotos: Array<Object>,
+  fotosPath: Array<string>,
   coletaDepartamento: Array<Object>,
   departamentoID: number | string,
   coletaTipo: Array<Object>,
@@ -43,6 +45,7 @@ class CollectForm extends React.Component<Props, State> {
     fetchSelect: false,
     showCamera: false,
     fotos: [],
+    fotosPath: [],
     coletaDepartamento: [],
     departamentoID: '',
     coletaTipo: [],
@@ -84,7 +87,7 @@ class CollectForm extends React.Component<Props, State> {
   sendData = () => {
     const {
       departamentoID, tipoID, userData, descricao,
-      fotos
+      fotos, fotosPath
     } = this.state
     const { latitude, longitude } = this.props
 
@@ -92,6 +95,25 @@ class CollectForm extends React.Component<Props, State> {
       this.alert('Atenção', 'Preecha todos os campos')
       return false
     }
+
+    const form = new FormData()
+
+    fotos.forEach((value) => {
+      const imageData = {
+        uri: value.uri,
+        type: 'image/jpeg',
+        name: 'image.jpg'
+      }
+
+      form.append('image', JSON.stringify(imageData))
+
+      httpRequest(`/coleta/${userData.userid}/gravaArquivo`, {
+        method: 'POST',
+        body: form
+      }).then(response => this.setState({ fotosPath: [...fotosPath, response] }))
+        .catch(error => this.setState({ error }))
+    })
+
 
     return this.setState({ fetch: true }, () => httpRequest('/coleta', {
       method: 'POST',
@@ -102,9 +124,9 @@ class CollectForm extends React.Component<Props, State> {
         id_tipo: departamentoID,
         id_usr_coleta: userData.userid,
         descricao,
-        img1: fotos[0] ? fotos[0].uri : '', // Salvando a uri por enquanto
-        img2: fotos[1] ? fotos[1].uri : '',
-        img3: fotos[2] ? fotos[2].uri : ''
+        img1: fotosPath[0] ? fotosPath[0] : '',
+        img2: fotosPath[1] ? fotosPath[1] : '',
+        img3: fotosPath[2] ? fotosPath[2] : ''
       }
     }).then(() => {
       this.setState({ fetch: false })
@@ -133,12 +155,12 @@ class CollectForm extends React.Component<Props, State> {
 
   takePicture = async () => {
     if (this.camera) {
-      const options = { quality: 0.5, base64: true }
+      const options = { quality: 0.5, base64: false }
       const data = await this.camera.takePictureAsync(options)
       const { fotos, showCamera } = this.state
 
       this.setState({
-        fotos: [...fotos, { base64: data.base64, uri: data.uri }],
+        fotos: [...fotos, { uri: data.uri }],
         showCamera: !showCamera
       })
     }
@@ -161,187 +183,187 @@ class CollectForm extends React.Component<Props, State> {
       <Container style={styles.container}>
 
         {fetchSelect
-        && <ActivityIndicator style={styles.activityIndicator} color={common.colors.white} />}
+          && <ActivityIndicator style={styles.activityIndicator} color={common.colors.white} />}
 
         {!fetchSelect && !fetch && error !== ''
-        && <Alert color={common.colors.red} msg={error} />}
+          && <Alert color={common.colors.red} msg={error} />}
 
         {!fetchSelect && error === '' && !showCamera && (
-        <>
-          <Text style={styles.text}>Coleta de Ponto</Text>
+          <>
+            <Text style={styles.text}>Coleta de Ponto</Text>
 
-          <Picker
-            selectedValue={departamentoID}
-            style={styles.picker}
-            itemStyle={styles.pickerItem}
-            onValueChange={(id) => {
-              if (id !== -1) {
-                this.setState({ departamentoID: id })
+            <Picker
+              selectedValue={departamentoID}
+              style={styles.picker}
+              itemStyle={styles.pickerItem}
+              onValueChange={(id) => {
+                if (id !== -1) {
+                  this.setState({ departamentoID: id })
+                }
               }
-            }
-                  }
-          >
-            <Picker.Item label="Selecione um departamento" value={-1} />
-            {coletaDepartamento.map(dep => (
-              <Picker.Item
-                key={dep.id}
-                label={dep.nome}
-                value={dep.id}
-              />
-            ))}
-          </Picker>
-
-          <Picker
-            selectedValue={tipoID}
-            style={styles.picker}
-            itemStyle={styles.pickerItem}
-            onValueChange={(id) => {
-              if (id !== -1) {
-                this.setState({ tipoID: id })
               }
-            }
-                  }
-          >
-            <Picker.Item label="Selecione um tipo" value={-1} />
-            {coletaTipo.map(dep => (
-              <Picker.Item
-                key={dep.id}
-                label={dep.nome}
-                value={dep.id}
-              />
-            ))}
-          </Picker>
-
-          <TextInput
-            placeholder="Observação"
-            placeholderTextColor={common.colors.lightGray}
-            selectionColor={common.colors.green}
-            style={styles.input}
-            multiline
-            numberOfLines={2}
-            value={descricao}
-            onChangeText={obs => this.setState({ descricao: obs })}
-          />
-
-          {fotos.length < 3 ? (
-            <Text
-              onPress={this.toggleCamera}
-              style={{
-                color: common.colors.white,
-                padding: 15,
-              }}
-              hitSlop={{
-                top: 30,
-                left: 30,
-                bottom: 30,
-                right: 30
-              }}
             >
-              <Icon
-                name="camera"
-                size={16}
-                color={common.colors.white}
-              />
-              {'  '}
-              Capturar Imagem
-            </Text>
-          )
-            : (
-              <Text style={{
-                color: common.colors.white,
-                padding: 15,
-                fontSize: 14,
-                fontWeight: 'bold'
-              }}
-              >
-Quantidade máxima de fotos atingida
+              <Picker.Item label="Selecione um departamento" value={-1} />
+              {coletaDepartamento.map(dep => (
+                <Picker.Item
+                  key={dep.id}
+                  label={dep.nome}
+                  value={dep.id}
+                />
+              ))}
+            </Picker>
 
+            <Picker
+              selectedValue={tipoID}
+              style={styles.picker}
+              itemStyle={styles.pickerItem}
+              onValueChange={(id) => {
+                if (id !== -1) {
+                  this.setState({ tipoID: id })
+                }
+              }
+              }
+            >
+              <Picker.Item label="Selecione um tipo" value={-1} />
+              {coletaTipo.map(dep => (
+                <Picker.Item
+                  key={dep.id}
+                  label={dep.nome}
+                  value={dep.id}
+                />
+              ))}
+            </Picker>
+
+            <TextInput
+              placeholder="Observação"
+              placeholderTextColor={common.colors.lightGray}
+              selectionColor={common.colors.green}
+              style={styles.input}
+              multiline
+              numberOfLines={2}
+              value={descricao}
+              onChangeText={obs => this.setState({ descricao: obs })}
+            />
+
+            {fotos.length < 3 ? (
+              <Text
+                onPress={this.toggleCamera}
+                style={{
+                  color: common.colors.white,
+                  padding: 15,
+                }}
+                hitSlop={{
+                  top: 30,
+                  left: 30,
+                  bottom: 30,
+                  right: 30
+                }}
+              >
+                <Icon
+                  name="camera"
+                  size={16}
+                  color={common.colors.white}
+                />
+                {'  '}
+                Capturar Imagem
               </Text>
             )
-          }
-
-          {fotos.length > 0
-            && (
-              <>
-                <Text
-                  style={{
-                    color: common.colors.white,
-                    marginLeft: 15,
-                    marginTop: 10,
-                    marginBottom: 10
-                  }}
+              : (
+                <Text style={{
+                  color: common.colors.white,
+                  padding: 15,
+                  fontSize: 14,
+                  fontWeight: 'bold'
+                }}
                 >
-                Fotos em anexo:
-                  {' '}
-                  {fotos.length}
-                </Text>
-                <View style={{ marginLeft: 5, flexDirection: 'row', marginBottom: 10 }}>
-                  {fotos.length > 0 && fotos.map(foto => (
-                    <View key={foto.uri}>
-                      <Image
-                        source={{ uri: foto.uri }}
-                        style={{
-                          marginLeft: 10,
-                          width: 100,
-                          height: 100
-                        }}
-                      />
-                      <Text
-                        style={{
-                          alignSelf: 'center',
-                          marginTop: 10,
-                          color: '#fff',
-                          fontSize: 14,
-                          fontWeight: 'bold',
-                        }}
-                        hitSlop={{
-                          top: 30,
-                          left: 30,
-                          bottom: 30,
-                          right: 30
-                        }}
-                        onPress={() => this.removePicture(foto)}
-                      >
-                      X
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              </>
-            )
-          }
+                  Quantidade máxima de fotos atingida
 
-          <Button
-            title={!fetch ? 'ENVIAR' : 'ENVIANDO...'}
-            onPress={() => this.sendData()}
-            style={styles.button}
-          />
-        </>
+                </Text>
+              )
+            }
+
+            {fotos.length > 0
+              && (
+                <>
+                  <Text
+                    style={{
+                      color: common.colors.white,
+                      marginLeft: 15,
+                      marginTop: 10,
+                      marginBottom: 10
+                    }}
+                  >
+                    Fotos em anexo:
+                    {' '}
+                    {fotos.length}
+                  </Text>
+                  <View style={{ marginLeft: 5, flexDirection: 'row', marginBottom: 10 }}>
+                    {fotos.length > 0 && fotos.map(foto => (
+                      <View key={foto.uri}>
+                        <Image
+                          source={{ uri: foto.uri }}
+                          style={{
+                            marginLeft: 10,
+                            width: 100,
+                            height: 100
+                          }}
+                        />
+                        <Text
+                          style={{
+                            alignSelf: 'center',
+                            marginTop: 10,
+                            color: '#fff',
+                            fontSize: 14,
+                            fontWeight: 'bold',
+                          }}
+                          hitSlop={{
+                            top: 30,
+                            left: 30,
+                            bottom: 30,
+                            right: 30
+                          }}
+                          onPress={() => this.removePicture(foto)}
+                        >
+                          X
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                </>
+              )
+            }
+
+            <Button
+              title={!fetch ? 'ENVIAR' : 'ENVIANDO...'}
+              onPress={() => this.sendData()}
+              style={styles.button}
+            />
+          </>
         )
         }
 
         {showCamera
-        && (
-        <View style={{
-          flex: 1,
-          flexDirection: 'column',
-          backgroundColor: 'black'
-        }}
-        >
-          <RNCamera
-            ref={ref => this.camera = ref}
-            style={styles.preview}
-            type={RNCamera.Constants.Type.back}
-            flashMode={RNCamera.Constants.FlashMode.auto}
-          />
-          <View style={{ flex: 0, flexDirection: 'row', justifyContent: 'center', }}>
-            <TouchableOpacity
-              onPress={this.takePicture}
-              style={styles.capture}
-            />
-          </View>
-        </View>
-        )
+          && (
+            <View style={{
+              flex: 1,
+              flexDirection: 'column',
+              backgroundColor: 'black'
+            }}
+            >
+              <RNCamera
+                ref={ref => this.camera = ref}
+                style={styles.preview}
+                type={RNCamera.Constants.Type.back}
+                flashMode={RNCamera.Constants.FlashMode.auto}
+              />
+              <View style={{ flex: 0, flexDirection: 'row', justifyContent: 'center', }}>
+                <TouchableOpacity
+                  onPress={this.takePicture}
+                  style={styles.capture}
+                />
+              </View>
+            </View>
+          )
         }
       </Container>
     )
