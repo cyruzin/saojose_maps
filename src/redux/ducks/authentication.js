@@ -3,7 +3,7 @@
  * @format
  */
 
-import { httpAuthentication } from '../../util/request'
+import { httpRequestAuthetication } from '../../util/request'
 
 /**
  * Authentication Action Types.
@@ -13,13 +13,13 @@ const types = {
   FETCH: 'AUTHENTICATION/FETCH',
   SUCCESS: 'AUTHENTICATION/SUCCESS',
   FAILURE: 'AUTHENTICATION/FAILURE',
-  RESET: 'AUTHENTICATION/RESET'
+  RESET: 'AUTHENTICATION/RESET',
 }
 
-type FetchAction = { type: typeof types.FETCH }
-type SuccessAction = { type: typeof types.SUCCESS, payload: Object }
-type FailureAction = { type: typeof types.FAILURE, payload: string }
-type ResetAction = { type: typeof types.RESET }
+type FetchAction = { type: typeof types.FETCH };
+type SuccessAction = { type: typeof types.SUCCESS, payload: Object };
+type FailureAction = { type: typeof types.FAILURE, payload: string };
+type ResetAction = { type: typeof types.RESET };
 type Action = FetchAction | SuccessAction | FailureAction | ResetAction;
 
 /**
@@ -27,17 +27,17 @@ type Action = FetchAction | SuccessAction | FailureAction | ResetAction;
  */
 
 type State = {
-    fetch: boolean,
-    token: string,
-    authorized: boolean,
-    error: string
-}
+  fetch: boolean,
+  token: string,
+  authorized: boolean,
+  error: string
+};
 
 const initialState: State = {
   fetch: false,
   token: '',
   authorized: false,
-  error: ''
+  error: '',
 }
 
 /**
@@ -49,7 +49,7 @@ export default (state: State = initialState, action: Action): State => {
     case types.FETCH:
       return {
         ...state,
-        fetch: true
+        fetch: true,
       }
     case types.SUCCESS:
       return {
@@ -57,13 +57,13 @@ export default (state: State = initialState, action: Action): State => {
         fetch: false,
         token: action.payload,
         authorized: true,
-        error: ''
+        error: '',
       }
     case types.FAILURE:
       return {
         ...state,
         fetch: false,
-        error: action.payload
+        error: action.payload,
       }
     case types.RESET:
       return initialState
@@ -77,33 +77,39 @@ export default (state: State = initialState, action: Action): State => {
  */
 
 export const fetchAuthentication = (): FetchAction => ({
-  type: types.FETCH
+  type: types.FETCH,
 })
 
 export const successAuthentication = (payload: Object): SuccessAction => ({
-  type: types.SUCCESS, payload
+  type: types.SUCCESS,
+  payload,
 })
 
 export const failureAuthentication = (payload: string): FailureAction => ({
-  type: types.FAILURE, payload
+  type: types.FAILURE,
+  payload,
 })
 
 export const resetAuthentication = (): ResetAction => ({
-  type: types.RESET
+  type: types.RESET,
 })
 
 /**
  * Authentication Side Effects Types and Functions.
  */
 
-type GetState = () => State
-type PromiseAction = Promise<Action>
-type ThunkAction = (dispatch: Dispatch, getState: GetState) => any
-type Dispatch = (action: Action | ThunkAction | PromiseAction | Array<Action>) => any
+type GetState = () => State;
+type PromiseAction = Promise<Action>;
+type ThunkAction = (dispatch: Dispatch, getState: GetState) => any;
+type Dispatch = (
+  action: Action | ThunkAction | PromiseAction | Array<Action>
+) => any;
 
-export const checkAuthentication = (credentials: Object): ThunkAction => (dispatch) => {
+export const checkAuthentication = (
+  credentials: Object
+): ThunkAction => (dispatch) => {
   dispatch(fetchAuthentication())
-  return httpAuthentication(credentials)
-    .then(response => dispatch(successAuthentication(response.data)))
+  return httpRequestAuthetication({ body: credentials })
+    .then(response => dispatch(successAuthentication(response)))
     .catch(error => dispatch(failureAuthentication(error)))
 }
