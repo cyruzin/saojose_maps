@@ -3,21 +3,22 @@
  * @format
  */
 
-import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import Geolocation from "@react-native-community/geolocation";
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { FloatingAction } from 'react-native-floating-action';
-import Geojson from 'react-native-geojson';
-import common from '../../util/common';
-import { routeFix } from '../../util/helpers';
-import { Alert } from '../../components/UI';
-import LimitesJuridicos from '../../assets/LimitesJuridicos.json';
+import * as React from 'react'
+import { StyleSheet, View } from 'react-native'
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
+import Geolocation from '@react-native-community/geolocation'
+import Icon from 'react-native-vector-icons/FontAwesome'
+import { FloatingAction } from 'react-native-floating-action'
+import Geojson from 'react-native-geojson'
+import common from '../../util/common'
+import { routeFix } from '../../util/helpers'
+import { Alert } from '../../components/UI'
+import LimitesJuridicos from '../../assets/LimitesJuridicos.json'
 
 type State = {
   latitude: number,
   longitude: number,
+  marginBottom: number,
   error: string
 };
 
@@ -25,28 +26,33 @@ class Dashboard extends React.Component<{}, State> {
   state = {
     latitude: 0,
     longitude: 0,
+    marginBottom: 1,
     error: ''
   };
 
   componentDidMount() {
-    this.setPosition();
+    this.setPosition()
   }
+
+  onMapReady = () => this.setState({ marginBottom: 0 })
 
   setPosition = () => {
     Geolocation.getCurrentPosition(
-      position => {
+      (position) => {
         this.setState({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
           error: ''
-        });
+        })
       },
       error => this.setState({ error: error.message })
-    );
-  };
+    )
+  }
 
   render() {
-    const { latitude, longitude, error } = this.state;
+    const {
+      latitude, longitude, marginBottom, error
+    } = this.state
 
     return (
       <View style={styles.container}>
@@ -55,14 +61,20 @@ class Dashboard extends React.Component<{}, State> {
         {error === '' && (
           <MapView
             mapType="hybrid"
-            style={styles.map}
+            onMapReady={this.onMapReady}
+            style={{ ...styles.map, marginBottom }}
             provider={PROVIDER_GOOGLE}
             loadingIndicatorColor={common.colors.green}
             loadingEnabled
             showsUserLocation
             showsMyLocationButton
             followsUserLocation
-            // onMarkerDrag={() => this.setPosition()}
+            onMarkerDragEnd={(event) => {
+              this.setState({
+                latitude: event.nativeEvent.coordinate.latitude,
+                longitude: event.nativeEvent.coordinate.longitude
+              })
+            }}
             region={{
               latitude,
               longitude,
@@ -71,7 +83,7 @@ class Dashboard extends React.Component<{}, State> {
             }}
           >
             <Marker
-              // draggable
+              draggable
               coordinate={{
                 latitude,
                 longitude
@@ -80,16 +92,19 @@ class Dashboard extends React.Component<{}, State> {
             />
             <Geojson geojson={LimitesJuridicos} />
           </MapView>
-        )}
-        {latitude !== 0 && (
-          <FloatingAction
-            actions={fabActions}
-            color={common.colors.green}
-            onPressItem={name => routeFix(name, this.state)}
-          />
-        )}
+        )
+        }
+        {
+          latitude !== 0 && (
+            <FloatingAction
+              actions={fabActions}
+              color={common.colors.green}
+              onPressItem={name => routeFix(name, this.state)}
+            />
+          )
+        }
       </View>
-    );
+    )
   }
 }
 
@@ -109,7 +124,7 @@ const styles = StyleSheet.create({
   icon: {
     textAlign: 'center'
   }
-});
+})
 
 const fabActions = [
   {
@@ -154,6 +169,6 @@ const fabActions = [
     color: common.colors.green,
     position: 3
   }
-];
+]
 
-export default Dashboard;
+export default Dashboard
