@@ -5,26 +5,37 @@
 
 import React from 'react'
 import {
-  StyleSheet, Picker, Alert as AlertRN,
-  TouchableOpacity, View, Image, ActivityIndicator
+  StyleSheet,
+  Picker,
+  Alert as AlertRN,
+  TouchableOpacity,
+  View,
+  Image,
+  ActivityIndicator
 } from 'react-native'
+
 import { Actions } from 'react-native-router-flux'
 import AsyncStorage from '@react-native-community/async-storage'
 import { RNCamera } from 'react-native-camera'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import common from '../../util/common'
-import { httpRequest } from '../../util/request'
-import {
-  Container, Text, Button, Alert, TextInput
-} from '../../components/UI'
 
+import { httpRequest } from '../../util/request'
+import { UPLOAD_ACCESS_KEY } from '../../util/constants'
+import common from '../../util/common'
+
+import {
+  Container,
+  Text,
+  Button,
+  Alert,
+  TextInput
+} from '../../components/UI'
 
 type State = {
   fetch: boolean,
   fetchSelect: boolean,
   showCamera: boolean,
   fotos: Array<Object>,
-  fotosPath: Array<string>,
   coletaDepartamento: Array<Object>,
   departamentoID: number | string,
   coletaTipo: Array<Object>,
@@ -45,7 +56,6 @@ class CollectForm extends React.Component<Props, State> {
     fetchSelect: false,
     showCamera: false,
     fotos: [],
-    fotosPath: [],
     coletaDepartamento: [],
     departamentoID: '',
     coletaTipo: [],
@@ -55,12 +65,12 @@ class CollectForm extends React.Component<Props, State> {
     error: ''
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     this.getUserData()
     this.fetchCollectData()
   }
 
-  fetchCollectData = () => {
+  fetchCollectData = (): void => {
     this.setState({ fetchSelect: true })
     Promise.all([
       httpRequest('/coletaDepart', { method: 'GET' }),
@@ -74,7 +84,7 @@ class CollectForm extends React.Component<Props, State> {
     }).catch(error => this.setState({ error, fetchSelect: false }))
   }
 
-  getUserData = () => {
+  getUserData = (): void => {
     AsyncStorage.getItem('token')
       .then((value) => {
         if (value !== null) {
@@ -84,62 +94,86 @@ class CollectForm extends React.Component<Props, State> {
       })
   }
 
-  sendData = () => {
-    const {
-      departamentoID, tipoID, userData, descricao,
-      fotos, fotosPath
-    } = this.state
-    const { latitude, longitude } = this.props
+  sendData = (): void => {
+    const { departamentoID, tipoID } = this.state
 
     if (departamentoID === '' || tipoID === '') {
       this.alert('Atenção', 'Preecha todos os campos')
-      return false
+      return
     }
 
-    const form = new FormData()
-
-    fotos.forEach((value) => {
-      const imageData = {
-        uri: value.uri,
-        type: 'image/jpeg',
-        name: 'image.jpg'
-      }
-
-      form.append('image', JSON.stringify(imageData))
-
-      httpRequest(`/coleta/${userData.userid}/gravaArquivo`, {
-        method: 'POST',
-        body: form
-      }).then(response => this.setState({ fotosPath: [...fotosPath, response] }))
-        .catch(error => this.setState({ error }))
-    })
-
-
-    return this.setState({ fetch: true }, () => httpRequest('/coleta', {
-      method: 'POST',
-      body: {
-        latitude,
-        longitude,
-        id_departamento: departamentoID,
-        id_tipo: departamentoID,
-        id_usr_coleta: userData.userid,
-        descricao,
-        img1: fotosPath[0] ? fotosPath[0] : '',
-        img2: fotosPath[1] ? fotosPath[1] : '',
-        img3: fotosPath[2] ? fotosPath[2] : ''
-      }
-    }).then(() => {
-      this.setState({ fetch: false })
-      this.alert(
-        'Sucesso',
-        'Coleta realizada',
-        () => Actions.replace('collectList')
-      )
-    })
-      .catch(error => this.setState({ error, fetch: false })))
+    this.sendCollect()
+      .then((response) => {
+        this.sendImages(response)
+          .then((responseImages) => {
+            if (responseImages) {
+              this.alert('Sucesso', 'Coleta realizada', () => Actions.replace('collectList'))
+            }
+          })
+      })
   }
 
-  alert = (title: string, body: string, callback: any) => {
+  sendCollect = async (): Promise<any> => {
+    const {
+      departamentoID, userData, descricao
+    } = this.state
+
+    const { latitude, longitude } = this.props
+
+    try {
+      const request = await httpRequest(
+        '/coleta', {
+          method: 'POST',
+          body: {
+            latitude,
+            longitude,
+            id_departamento: departamentoID,
+            id_tipo: departamentoID,
+            id_usr_coleta: userData.userid,
+            descricao
+          }
+        }
+      )
+      this.setState({ fetch: true })
+      return request
+    } catch (error) {
+      return this.setState({ error, fetch: false })
+    }
+  }
+
+  sendImages = async (response: Object): any => {
+    try {
+      const { fotos } = this.state
+      const { id } = response
+      const form = new FormData()
+
+      fotos.forEach((value, index) => {
+        form.append('arquivo[]', {
+          uri: value.uri,
+          type: 'image/jpeg',
+          name: `image${index + 1}`
+        })
+      })
+
+      const responseImages = await fetch(
+        `http://dev.gddoc.com.br/maps_sj/gravaimg/${UPLOAD_ACCESS_KEY}/${id}`, {
+          method: 'POST',
+          body: form,
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      )
+      await responseImages.json()
+      if (!responseImages.ok) this.setState({ fetch: false })
+      this.setState({ fetch: false })
+      return true
+    } catch (error) {
+      return this.setState({ error: 'Não possível enviar as imagens', fetch: false })
+    }
+  }
+
+  alert = (title: string, body: string, callback: any): void => {
     AlertRN.alert(
       title,
       body,
@@ -148,12 +182,12 @@ class CollectForm extends React.Component<Props, State> {
     )
   }
 
-  toggleCamera = () => {
+  toggleCamera = (): void => {
     const { showCamera } = this.state
     this.setState({ showCamera: !showCamera })
   }
 
-  takePicture = async () => {
+  takePicture = async (): Promise<void> => {
     if (this.camera) {
       const options = { quality: 0.5, base64: false }
       const data = await this.camera.takePictureAsync(options)
@@ -166,27 +200,25 @@ class CollectForm extends React.Component<Props, State> {
     }
   }
 
-  removePicture = (foto) => {
+  removePicture = (foto): void => {
     this.alert('Remover', 'Tem certeza que deseja remover essa foto?', () => {
       const newFotos = this.state.fotos.filter(f => f.uri !== foto.uri)
       this.setState({ fotos: newFotos })
     })
   }
 
-  render() {
+  render(): JSX.Element {
     const {
-      fetch, fetchSelect, showCamera, fotos, coletaDepartamento, departamentoID,
-      coletaTipo, tipoID, descricao, error
+      fetch, fetchSelect, showCamera, fotos, coletaDepartamento,
+      departamentoID, coletaTipo, tipoID, descricao, error
     } = this.state
 
     return (
       <Container style={styles.container}>
 
-        {fetchSelect
-          && <ActivityIndicator style={styles.activityIndicator} color={common.colors.white} />}
+        {fetchSelect && <ActivityIndicator style={styles.activityIndicator} color={common.colors.white} />}
 
-        {!fetchSelect && !fetch && error !== ''
-          && <Alert color={common.colors.red} msg={error} />}
+        {!fetchSelect && !fetch && error !== '' && <Alert color={common.colors.red} msg={error} />}
 
         {!fetchSelect && error === '' && !showCamera && (
           <>
@@ -277,7 +309,6 @@ class CollectForm extends React.Component<Props, State> {
                 }}
                 >
                   Quantidade máxima de fotos atingida
-
                 </Text>
               )
             }
@@ -285,43 +316,21 @@ class CollectForm extends React.Component<Props, State> {
             {fotos.length > 0
               && (
                 <>
-                  <Text
-                    style={{
-                      color: common.colors.white,
-                      marginLeft: 15,
-                      marginTop: 10,
-                      marginBottom: 10
-                    }}
-                  >
+                  <Text style={styles.imageAttachment}>
                     Fotos em anexo:
                     {' '}
                     {fotos.length}
                   </Text>
-                  <View style={{ marginLeft: 5, flexDirection: 'row', marginBottom: 10 }}>
+                  <View style={styles.imageBox}>
                     {fotos.length > 0 && fotos.map(foto => (
                       <View key={foto.uri}>
                         <Image
                           source={{ uri: foto.uri }}
-                          style={{
-                            marginLeft: 10,
-                            width: 100,
-                            height: 100
-                          }}
+                          style={styles.image}
                         />
                         <Text
-                          style={{
-                            alignSelf: 'center',
-                            marginTop: 10,
-                            color: '#fff',
-                            fontSize: 14,
-                            fontWeight: 'bold',
-                          }}
-                          hitSlop={{
-                            top: 30,
-                            left: 30,
-                            bottom: 30,
-                            right: 30
-                          }}
+                          style={styles.imageText}
+                          hitSlop={styles.imageTextHitSlop}
                           onPress={() => this.removePicture(foto)}
                         >
                           X
@@ -335,6 +344,7 @@ class CollectForm extends React.Component<Props, State> {
 
             <Button
               title={!fetch ? 'ENVIAR' : 'ENVIANDO...'}
+              disabled={!!fetch}
               onPress={() => this.sendData()}
               style={styles.button}
             />
@@ -344,19 +354,14 @@ class CollectForm extends React.Component<Props, State> {
 
         {showCamera
           && (
-            <View style={{
-              flex: 1,
-              flexDirection: 'column',
-              backgroundColor: 'black'
-            }}
-            >
+            <View style={styles.cameraBox}>
               <RNCamera
                 ref={ref => this.camera = ref}
                 style={styles.preview}
                 type={RNCamera.Constants.Type.back}
                 flashMode={RNCamera.Constants.FlashMode.auto}
               />
-              <View style={{ flex: 0, flexDirection: 'row', justifyContent: 'center', }}>
+              <View style={styles.cameraButton}>
                 <TouchableOpacity
                   onPress={this.takePicture}
                   style={styles.capture}
@@ -425,6 +430,45 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignSelf: 'center',
     margin: 20
+  },
+  imageAttachment: {
+    color: common.colors.white,
+    marginLeft: 15,
+    marginTop: 10,
+    marginBottom: 10
+  },
+  imageBox: {
+    marginLeft: 5,
+    flexDirection: 'row',
+    marginBottom: 10
+  },
+  image: {
+    marginLeft: 10,
+    width: 100,
+    height: 100
+  },
+  imageText: {
+    alignSelf: 'center',
+    marginTop: 10,
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  imageTextHitSlop: {
+    top: 30,
+    left: 30,
+    bottom: 30,
+    right: 30
+  },
+  cameraBox: {
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor: 'black'
+  },
+  cameraButton: {
+    flex: 0,
+    flexDirection: 'row',
+    justifyContent: 'center'
   }
 })
 
