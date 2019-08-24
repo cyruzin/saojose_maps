@@ -5,14 +5,19 @@
 
 import * as React from 'react'
 import { StyleSheet, View } from 'react-native'
+
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
+import { Actions } from 'react-native-router-flux'
 import Geolocation from '@react-native-community/geolocation'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { FloatingAction } from 'react-native-floating-action'
 import Geojson from 'react-native-geojson'
+import { FloatingAction } from 'react-native-floating-action'
+
 import common from '../../util/common'
 import { routeFix } from '../../util/helpers'
+
 import { Alert } from '../../components/UI'
+
 import LimitesJuridicos from '../../assets/LimitesJuridicos.json'
 
 type State = {
@@ -56,44 +61,54 @@ class Dashboard extends React.Component<{}, State> {
 
     return (
       <View style={styles.container}>
-        {error !== '' && <Alert color={common.colors.red} msg={error} />}
-
-        {error === '' && (
-          <MapView
-            mapType="hybrid"
-            onMapReady={this.onMapReady}
-            style={{ ...styles.map, marginBottom }}
-            provider={PROVIDER_GOOGLE}
-            loadingIndicatorColor={common.colors.green}
-            loadingEnabled
-            showsUserLocation
-            showsMyLocationButton
-            followsUserLocation
-            onMarkerDragEnd={(event) => {
-              this.setState({
-                latitude: event.nativeEvent.coordinate.latitude,
-                longitude: event.nativeEvent.coordinate.longitude
-              })
-            }}
-            region={{
-              latitude,
-              longitude,
-              latitudeDelta: 0.0042,
-              longitudeDelta: 0.0031
-            }}
-          >
-            <Marker
-              draggable
-              coordinate={{
-                latitude,
-                longitude
-              }}
-              tracksViewChange={false}
+        {error !== ''
+          && (
+            <Alert
+              color={common.colors.red}
+              msg={error}
+              onPress={() => Actions.refresh({ key: Math.random() })}
             />
-            <Geojson geojson={LimitesJuridicos} />
-          </MapView>
-        )
+          )
         }
+
+        <MapView
+          mapType="hybrid"
+          onMapReady={this.onMapReady}
+          style={{ ...styles.map, marginBottom }}
+          provider={PROVIDER_GOOGLE}
+          loadingIndicatorColor={common.colors.green}
+          loadingEnabled
+          showsUserLocation
+          showsMyLocationButton
+          followsUserLocation
+          onMarkerDragEnd={(event) => {
+            this.setState({
+              latitude: event.nativeEvent.coordinate.latitude,
+              longitude: event.nativeEvent.coordinate.longitude
+            })
+          }}
+          region={{
+            latitude,
+            longitude,
+            latitudeDelta: 0.0042,
+            longitudeDelta: 0.0031
+          }}
+        >
+          <Marker
+            draggable
+            coordinate={{
+              latitude,
+              longitude
+            }}
+            tracksViewChange={false}
+          />
+          <Geojson
+            geojson={LimitesJuridicos}
+            strokeWidth={1.5}
+            strokeColor={common.colors.red}
+          />
+        </MapView>
+
         {
           latitude !== 0 && (
             <FloatingAction
@@ -141,20 +156,20 @@ const fabActions = [
     color: common.colors.green,
     position: 1
   },
-  {
-    text: 'Coletar Área',
-    name: 'collectArea',
-    icon: (
-      <Icon
-        name="street-view"
-        size={22}
-        color={common.colors.white}
-        style={styles.icon}
-      />
-    ),
-    color: common.colors.green,
-    position: 2
-  },
+  // {
+  //   text: 'Coletar Área',
+  //   name: 'collectArea',
+  //   icon: (
+  //     <Icon
+  //       name="street-view"
+  //       size={22}
+  //       color={common.colors.white}
+  //       style={styles.icon}
+  //     />
+  //   ),
+  //   color: common.colors.green,
+  //   position: 2
+  // },
   {
     text: 'Listar Coletas',
     name: 'collectList',
@@ -167,7 +182,7 @@ const fabActions = [
       />
     ),
     color: common.colors.green,
-    position: 3
+    position: 2
   }
 ]
 

@@ -5,19 +5,25 @@
 
 import React from 'react'
 import { TouchableHighlight, StyleSheet } from 'react-native'
+
 import common from '../../util/common'
+
 import Text from './Text'
 
 type Props = {
-    title: string,
-    style?: Object,
-    onPress: () => void
+  title: string,
+  style?: Object,
+  disabled?: boolean,
+  onPress: () => void
 }
 
 const Button = (props: Props) => {
-  const { onPress, style, title } = props
+  const {
+    onPress, style, title, disabled
+  } = props
   return (
     <TouchableHighlight
+      disabled={disabled}
       onPress={onPress}
       style={[styles.button, style]}
       underlayColor={common.colors.lightGray}
@@ -28,6 +34,7 @@ const Button = (props: Props) => {
 }
 
 Button.defaultProps = {
+  disabled: false,
   style: {}
 }
 

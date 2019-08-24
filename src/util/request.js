@@ -28,7 +28,7 @@ export function httpRequestAuthetication({ body }) {
  * For generic requests.
  */
 
-export async function httpRequest(url, { method, body }) {
+export async function httpRequest(url, { method, body, headers }) {
   try {
     const localData = await AsyncStorage.getItem('token')
     const data = JSON.parse(localData)
@@ -39,7 +39,8 @@ export async function httpRequest(url, { method, body }) {
         body: JSON.stringify(body),
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${data.token}`
+          Authorization: `Bearer ${data.token}`,
+          ...headers
         }
       })
         .then(parseJSON)

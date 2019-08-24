@@ -26,6 +26,7 @@ export default () => (
       />
       <Drawer
         key="drawerMenu"
+        onEnter={loadState}
         renderTitle="São José Mapas"
         contentComponent={DrawerMenu}
         drawerWidth={250}
