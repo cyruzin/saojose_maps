@@ -95,7 +95,7 @@ class CollectForm extends React.Component<Props, State> {
   }
 
   sendData = (): void => {
-    const { departamentoID, tipoID } = this.state
+    const { departamentoID, tipoID, fotos } = this.state
 
     if (departamentoID === '' || tipoID === '') {
       this.alert('Atenção', 'Preecha todos os campos')
@@ -104,6 +104,10 @@ class CollectForm extends React.Component<Props, State> {
 
     this.sendCollect()
       .then((response) => {
+        if (fotos.length === 0) {
+          this.alert('Sucesso', 'Coleta realizada', () => Actions.replace('collectList'))
+          return
+        }
         this.sendImages(response)
           .then((responseImages) => {
             if (responseImages) {
@@ -216,11 +220,25 @@ class CollectForm extends React.Component<Props, State> {
     return (
       <Container style={styles.container}>
 
-        {fetchSelect && <ActivityIndicator style={styles.activityIndicator} color={common.colors.white} />}
+        {fetchSelect
+          && (
+            <ActivityIndicator
+              style={styles.activityIndicator}
+              color={common.colors.white}
+            />
+          )}
 
-        {!fetchSelect && !fetch && error !== '' && <Alert color={common.colors.red} msg={error} />}
+        {!fetchSelect
+          && !fetch && error !== ''
+          && (
+            <Alert
+              color={common.colors.red}
+              msg={error}
+            />
+          )
+        }
 
-        {!fetchSelect && error === '' && !showCamera && (
+        {!fetchSelect && !showCamera && (
           <>
             <Text style={styles.text}>Coleta de Ponto</Text>
 
