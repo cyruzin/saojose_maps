@@ -1,7 +1,7 @@
 import React from 'react'
 import { Router, Scene, Drawer } from 'react-native-router-flux'
 import common from '../../util/common'
-import { onBackPress, loadState } from '../../util/helpers'
+import { onBackPress, loadState, checkTokenExpiration } from '../../util/helpers'
 import DrawerMenu from '../DrawerMenu/DrawerMenu'
 import Login from '../../containers/Login/Login'
 import Dashboard from '../../containers/Dashboard/Dashboard'
@@ -26,7 +26,7 @@ export default () => (
       />
       <Drawer
         key="drawerMenu"
-        onEnter={loadState}
+        onEnter={checkTokenExpiration}
         renderTitle="São José Mapas"
         contentComponent={DrawerMenu}
         drawerWidth={250}

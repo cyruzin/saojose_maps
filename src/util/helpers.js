@@ -33,13 +33,24 @@ export const onBackPress = () => {
   return true
 }
 
-export const loadState = () => {
+export const checkTokenExpiration = () => {
   AsyncStorage.getItem('token').then((value) => {
     if (value !== null) {
       const data = JSON.parse(value)
       if (data.userData.expires < new Date().getTime() / 1000) {
         clearState()
         Actions.reset('login')
+      }
+    }
+  })
+}
+
+export const loadState = () => {
+  AsyncStorage.getItem('token').then((value) => {
+    if (value !== null) {
+      const data = JSON.parse(value)
+      if (data.userData.expires < new Date().getTime() / 1000) {
+        clearState()
         return false
       }
       if (data.authorized) {
