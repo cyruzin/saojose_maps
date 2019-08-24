@@ -39,6 +39,7 @@ export const loadState = () => {
       const data = JSON.parse(value)
       if (data.userData.expires < new Date().getTime() / 1000) {
         clearState()
+        Actions.reset('login')
         return false
       }
       if (data.authorized) {
