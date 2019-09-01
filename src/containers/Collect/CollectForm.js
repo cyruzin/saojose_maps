@@ -23,6 +23,8 @@ import { httpRequest } from '../../util/request'
 import { UPLOAD_ACCESS_KEY } from '../../util/constants'
 import common from '../../util/common'
 
+import type { State, Props } from '../../types/Collect/CollectForm'
+
 import {
   Container,
   Text,
@@ -31,39 +33,25 @@ import {
   TextInput
 } from '../../components/UI'
 
-type State = {
-  fetch: boolean,
-  fetchSelect: boolean,
-  showCamera: boolean,
-  fotos: Array<Object>,
-  coletaDepartamento: Array<Object>,
-  departamentoID: number | string,
-  coletaTipo: Array<Object>,
-  tipoID: number | string,
-  userData: Object,
-  descricao: string,
-  error: string
-}
-
-type Props = {
-  latitude: string,
-  longitude: string
-}
-
 class CollectForm extends React.Component<Props, State> {
-  state = {
-    fetch: false,
-    fetchSelect: false,
-    showCamera: false,
-    fotos: [],
-    coletaDepartamento: [],
-    departamentoID: '',
-    coletaTipo: [],
-    tipoID: '',
-    userData: {},
-    descricao: '',
-    error: ''
+  constructor(props: Props) {
+    super(props)
+
+    this.state = {
+      fetch: false,
+      fetchSelect: false,
+      showCamera: false,
+      fotos: [],
+      coletaDepartamento: [],
+      departamentoID: '',
+      coletaTipo: [],
+      tipoID: '',
+      userData: {},
+      descricao: '',
+      error: ''
+    }
   }
+
 
   componentDidMount(): void {
     this.getUserData()
@@ -81,7 +69,7 @@ class CollectForm extends React.Component<Props, State> {
         coletaTipo,
         fetchSelect: false
       })
-    }).catch(error => this.setState({ error, fetchSelect: false }))
+    }).catch((error) => this.setState({ error, fetchSelect: false }))
   }
 
   getUserData = (): void => {
@@ -204,14 +192,14 @@ class CollectForm extends React.Component<Props, State> {
     }
   }
 
-  removePicture = (foto): void => {
+  removePicture = (foto: Object): void => {
     this.alert('Remover', 'Tem certeza que deseja remover essa foto?', () => {
-      const newFotos = this.state.fotos.filter(f => f.uri !== foto.uri)
+      const newFotos = this.state.fotos.filter((f) => f.uri !== foto.uri)
       this.setState({ fotos: newFotos })
     })
   }
 
-  render(): JSX.Element {
+  render() {
     const {
       fetch, fetchSelect, showCamera, fotos, coletaDepartamento,
       departamentoID, coletaTipo, tipoID, descricao, error
@@ -235,8 +223,7 @@ class CollectForm extends React.Component<Props, State> {
               color={common.colors.red}
               msg={error}
             />
-          )
-        }
+          )}
 
         {!fetchSelect && !showCamera && (
           <>
@@ -250,11 +237,10 @@ class CollectForm extends React.Component<Props, State> {
                 if (id !== -1) {
                   this.setState({ departamentoID: id })
                 }
-              }
-              }
+              }}
             >
               <Picker.Item label="Selecione um departamento" value={-1} />
-              {coletaDepartamento.map(dep => (
+              {coletaDepartamento.map((dep) => (
                 <Picker.Item
                   key={dep.id}
                   label={dep.nome}
@@ -271,11 +257,10 @@ class CollectForm extends React.Component<Props, State> {
                 if (id !== -1) {
                   this.setState({ tipoID: id })
                 }
-              }
-              }
+              }}
             >
               <Picker.Item label="Selecione um tipo" value={-1} />
-              {coletaTipo.map(dep => (
+              {coletaTipo.map((dep) => (
                 <Picker.Item
                   key={dep.id}
                   label={dep.nome}
@@ -292,7 +277,7 @@ class CollectForm extends React.Component<Props, State> {
               multiline
               numberOfLines={2}
               value={descricao}
-              onChangeText={obs => this.setState({ descricao: obs })}
+              onChangeText={(obs) => this.setState({ descricao: obs })}
             />
 
             {fotos.length < 3 ? (
@@ -328,8 +313,7 @@ class CollectForm extends React.Component<Props, State> {
                 >
                   Quantidade máxima de fotos atingida
                 </Text>
-              )
-            }
+              )}
 
             {fotos.length > 0
               && (
@@ -340,7 +324,7 @@ class CollectForm extends React.Component<Props, State> {
                     {fotos.length}
                   </Text>
                   <View style={styles.imageBox}>
-                    {fotos.length > 0 && fotos.map(foto => (
+                    {fotos.length > 0 && fotos.map((foto) => (
                       <View key={foto.uri}>
                         <Image
                           source={{ uri: foto.uri }}
@@ -357,8 +341,7 @@ class CollectForm extends React.Component<Props, State> {
                     ))}
                   </View>
                 </>
-              )
-            }
+              )}
 
             <Button
               title={!fetch ? 'ENVIAR' : 'ENVIANDO...'}
@@ -367,14 +350,13 @@ class CollectForm extends React.Component<Props, State> {
               style={styles.button}
             />
           </>
-        )
-        }
+        )}
 
         {showCamera
           && (
             <View style={styles.cameraBox}>
               <RNCamera
-                ref={ref => this.camera = ref}
+                ref={(ref) => this.camera = ref}
                 style={styles.preview}
                 type={RNCamera.Constants.Type.back}
                 flashMode={RNCamera.Constants.FlashMode.auto}
@@ -386,8 +368,7 @@ class CollectForm extends React.Component<Props, State> {
                 />
               </View>
             </View>
-          )
-        }
+          )}
       </Container>
     )
   }
