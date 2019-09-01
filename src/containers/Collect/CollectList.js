@@ -7,7 +7,8 @@ import React from 'react'
 import {
   StyleSheet,
   ScrollView,
-  ActivityIndicator
+  ActivityIndicator,
+  TouchableHighlight
 } from 'react-native'
 
 import AsyncStorage from '@react-native-community/async-storage'
@@ -15,6 +16,7 @@ import debounce from 'lodash/debounce'
 
 import common from '../../util/common'
 import { httpRequest } from '../../util/request'
+import { routeFix } from '../../util/helpers'
 
 import type { State } from '../../types/Collect/CollectList'
 
@@ -74,7 +76,7 @@ class CollectList extends React.Component<{}, State> {
         }
       })
       .then(() => this.fetchCollect())
-  };
+  }
 
   fetchCollect = (): void => {
     this.setState({ fetch: true })
@@ -82,7 +84,19 @@ class CollectList extends React.Component<{}, State> {
     httpRequest(`/coleta/${userData.userid}/minhaColeta`, { method: 'GET' })
       .then((response) => this.setState({ data: response, fetch: false }))
       .catch((error) => this.setState({ error, fetch: false }))
-  };
+  }
+
+  fetchImages = (collectID: number | string): void => {
+    this.setState({ fetch: true })
+    httpRequest(`/coleta/${collectID}/minhaImagem`, { method: 'GET' })
+      .then((response) => {
+        this.setState({ fetch: false }, () => routeFix('collectImage', {
+          img1: response[0].img1,
+          img2: response[0].img3,
+          img3: response[0].img3
+        }))
+      }).catch((error) => this.setState({ error, fetch: false }))
+  }
 
   searchHandler = (searchKeyword: string): void => {
     if (searchKeyword === '') { return this.fetchCollect() }
@@ -131,12 +145,12 @@ class CollectList extends React.Component<{}, State> {
             && error === ''
             && data && data.map((list) => (
               <Container key={list.id} style={styles.content}>
-                <Container style={styles.titleBox}>
-                  <Text style={styles.title}>
+                <TouchableHighlight style={styles.titleBox}>
+                  <Text style={styles.title} onPress={() => this.fetchImages(list.id)}>
                     Coleta #
                     {list.id}
                   </Text>
-                </Container>
+                </TouchableHighlight>
                 <Container style={styles.textBox}>
                   <Text style={styles.text}>
                     Classificação:

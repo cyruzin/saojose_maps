@@ -10,6 +10,7 @@ import Login from '../../containers/Login/Login'
 import Dashboard from '../../containers/Dashboard/Dashboard'
 import CollectList from '../../containers/Collect/CollectList'
 import CollectForm from '../../containers/Collect/CollectForm'
+import CollectImage from '../../containers/Collect/CollectImage'
 
 export default () => (
   <Router
@@ -37,6 +38,7 @@ export default () => (
           <Scene key="dashboard" component={Dashboard} />
           <Scene key="collectList" component={CollectList} />
           <Scene key="collectForm" component={CollectForm} />
+          <Scene key="collectImage" component={CollectImage} />
         </Scene>
       </Drawer>
     </Scene>

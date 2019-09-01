@@ -14,7 +14,7 @@ import Geojson from 'react-native-geojson'
 import { FloatingAction } from 'react-native-floating-action'
 
 import common from '../../util/common'
-import { routeFix } from '../../util/helpers'
+import { routeFix, checkTokenExpiration } from '../../util/helpers'
 
 import type { State } from '../../types/Dashboard'
 
@@ -36,6 +36,10 @@ class Dashboard extends React.Component<{}, State> {
 
   componentDidMount(): void {
     this.setPosition()
+  }
+
+  componentDidUpdate(): void {
+    checkTokenExpiration()
   }
 
   onMapReady = (): void => this.setState({ marginBottom: 0 })
