@@ -4,7 +4,11 @@
  */
 
 import * as React from 'react'
-import { StyleSheet, View } from 'react-native'
+import {
+  StyleSheet,
+  View,
+  TouchableHighlight
+} from 'react-native'
 
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
 import { Actions } from 'react-native-router-flux'
@@ -18,7 +22,7 @@ import { routeFix, checkTokenExpiration } from '../../util/helpers'
 
 import type { State } from '../../types/Dashboard'
 
-import { Alert } from '../../components/UI'
+import { Alert, Text } from '../../components/UI'
 
 import LimitesJuridicos from '../../assets/LimitesJuridicos.json'
 
@@ -27,6 +31,7 @@ class Dashboard extends React.Component<{}, State> {
     super(props)
 
     this.state = {
+      area: [],
       latitude: 0,
       longitude: 0,
       marginBottom: 1,
@@ -57,9 +62,14 @@ class Dashboard extends React.Component<{}, State> {
     )
   }
 
+  clearArea = (): void => {
+    this.setState({ area: [] })
+    this.setPosition()
+  }
+
   render() {
     const {
-      latitude, longitude, marginBottom, error
+      latitude, longitude, marginBottom, area, error
     } = this.state
 
     return (
@@ -72,6 +82,18 @@ class Dashboard extends React.Component<{}, State> {
               onPress={() => Actions.refresh({ key: Math.random() })}
             />
           )}
+
+        {area.length > 1 && (
+        <TouchableHighlight style={styles.areaBox} onPress={this.clearArea}>
+          <Text style={styles.areaText}>
+            Colentando área:
+            {' '}
+            {area.length}
+            {' '}
+            coletadas
+          </Text>
+        </TouchableHighlight>
+        )}
 
         <MapView
           mapType="hybrid"
@@ -86,7 +108,12 @@ class Dashboard extends React.Component<{}, State> {
           onMarkerDragEnd={(event) => {
             this.setState({
               latitude: event.nativeEvent.coordinate.latitude,
-              longitude: event.nativeEvent.coordinate.longitude
+              longitude: event.nativeEvent.coordinate.longitude,
+              area: [...this.state.area, {
+                latitude: event.nativeEvent.coordinate.latitude,
+                longitude: event.nativeEvent.coordinate.longitude
+              }
+              ]
             })
           }}
           region={{
@@ -140,12 +167,29 @@ const styles = StyleSheet.create({
   },
   icon: {
     textAlign: 'center'
+  },
+  areaBox: {
+    position: 'absolute',
+    bottom: 0,
+    left: 5,
+    top: 5,
+    right: 0,
+    zIndex: 3,
+    width: 200,
+    height: 40,
+    backgroundColor: common.colors.green
+  },
+  areaText: {
+    color: common.colors.white,
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 10
   }
 })
 
 const fabActions = [
   {
-    text: 'Coletar Ponto',
+    text: 'Coletar Ponto / Área',
     name: 'collectForm',
     icon: (
       <Icon
