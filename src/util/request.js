@@ -6,7 +6,7 @@ import { AUTH_URL, BASE_URL } from './constants'
 
 // For authentication requests.
 export function httpRequestAuthetication({ body }: Object): Promise<any> {
-  return new Promise((resolve, reject): Promise<any> => {
+  return new Promise((resolve, reject) => {
     fetch(AUTH_URL, {
       method: 'POST',
       body: JSON.stringify(body),
@@ -32,15 +32,15 @@ export async function httpRequest(
     headers
   }: {
     method: string,
-    body: Object,
+    body?: Object,
     headers?: Object
   }
-): Promise<any> {
+): any {
   try {
     const localData: string = await AsyncStorage.getItem('token')
     const data: any = JSON.parse(localData)
 
-    return new Promise((resolve, reject): Promise<any> => {
+    return new Promise((resolve, reject) => {
       fetch(BASE_URL + url, {
         method,
         body: JSON.stringify(body),
