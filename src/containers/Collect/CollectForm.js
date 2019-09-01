@@ -181,7 +181,7 @@ class CollectForm extends React.Component<Props, State> {
 
   takePicture = async (): Promise<void> => {
     if (this.camera) {
-      const options = { quality: 0.5, base64: false }
+      const options = { quality: 0.1, base64: false }
       const data = await this.camera.takePictureAsync(options)
       const { fotos, showCamera } = this.state
 

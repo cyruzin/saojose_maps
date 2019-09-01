@@ -16,32 +16,31 @@ import { FloatingAction } from 'react-native-floating-action'
 import common from '../../util/common'
 import { routeFix } from '../../util/helpers'
 
+import type { State } from '../../types/Dashboard'
+
 import { Alert } from '../../components/UI'
 
 import LimitesJuridicos from '../../assets/LimitesJuridicos.json'
 
-type State = {
-  latitude: number,
-  longitude: number,
-  marginBottom: number,
-  error: string
-};
-
 class Dashboard extends React.Component<{}, State> {
-  state = {
-    latitude: 0,
-    longitude: 0,
-    marginBottom: 1,
-    error: ''
-  };
+  constructor(props: any) {
+    super(props)
 
-  componentDidMount() {
+    this.state = {
+      latitude: 0,
+      longitude: 0,
+      marginBottom: 1,
+      error: ''
+    }
+  }
+
+  componentDidMount(): void {
     this.setPosition()
   }
 
-  onMapReady = () => this.setState({ marginBottom: 0 })
+  onMapReady = (): void => this.setState({ marginBottom: 0 })
 
-  setPosition = () => {
+  setPosition = (): void => {
     Geolocation.getCurrentPosition(
       (position) => {
         this.setState({
@@ -50,7 +49,7 @@ class Dashboard extends React.Component<{}, State> {
           error: ''
         })
       },
-      error => this.setState({ error: error.message })
+      (error) => this.setState({ error: error.message })
     )
   }
 
@@ -68,8 +67,7 @@ class Dashboard extends React.Component<{}, State> {
               msg={error}
               onPress={() => Actions.refresh({ key: Math.random() })}
             />
-          )
-        }
+          )}
 
         <MapView
           mapType="hybrid"
@@ -114,7 +112,7 @@ class Dashboard extends React.Component<{}, State> {
             <FloatingAction
               actions={fabActions}
               color={common.colors.green}
-              onPressItem={name => routeFix(name, this.state)}
+              onPressItem={(name) => routeFix(name, this.state)}
             />
           )
         }
@@ -156,20 +154,6 @@ const fabActions = [
     color: common.colors.green,
     position: 1
   },
-  // {
-  //   text: 'Coletar Área',
-  //   name: 'collectArea',
-  //   icon: (
-  //     <Icon
-  //       name="street-view"
-  //       size={22}
-  //       color={common.colors.white}
-  //       style={styles.icon}
-  //     />
-  //   ),
-  //   color: common.colors.green,
-  //   position: 2
-  // },
   {
     text: 'Listar Coletas',
     name: 'collectList',

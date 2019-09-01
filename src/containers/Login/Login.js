@@ -5,58 +5,50 @@
 
 import React from 'react'
 import {
-  StyleSheet, View, Image
+  StyleSheet,
+  View,
+  Image
 } from 'react-native'
-import AsyncStorage from '@react-native-community/async-storage'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+
+import AsyncStorage from '@react-native-community/async-storage'
 import { Actions } from 'react-native-router-flux'
 import jwtDecode from 'jwt-decode'
+
 import { checkAuthentication } from '../../redux/ducks/authentication'
 import common from '../../util/common'
-import Logo from '../../assets/icon.png'
+
+import type { State, Props } from '../../types/Login'
+
 import {
-  Container, TextInput, Button, Text
+  Container,
+  TextInput,
+  Button,
+  Text
 } from '../../components/UI'
 
-type Credentials = {
-  login: string,
-  password: string
-};
-
-type State = {
-  login: string,
-  password: string,
-  opacity: number
-};
-
-type Props = {
-  authentication: {
-    fetch: boolean,
-    authorized: boolean,
-    token: string,
-    error: string
-  },
-  actions: {
-    checkAuthentication: (credentials: Credentials) => any
-  }
-};
+import Logo from '../../assets/icon.png'
 
 class Login extends React.Component<Props, State> {
-  state = {
-    login: '',
-    password: '',
-    opacity: 0,
-  };
+  constructor(props: Props) {
+    super(props)
 
-  componentDidMount() {
+    this.state = {
+      login: '',
+      password: '',
+      opacity: 0,
+    }
+  }
+
+  componentDidMount(): void {
     // $FlowFixMe
     this.opacityTime = setTimeout(() => {
       this.setState({ opacity: 100 })
     }, 300)
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(): void {
     const { authentication } = this.props
     if (authentication.authorized) {
       const userData = jwtDecode(authentication.token)
@@ -72,14 +64,14 @@ class Login extends React.Component<Props, State> {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     // $FlowFixMe
     if (this.opacityTime) {
       clearTimeout(this.opacityTime)
     }
   }
 
-  checkAuthentication = () => {
+  checkAuthentication = (): void => {
     const { login, password } = this.state
     const { actions } = this.props
     const credentials = {
@@ -105,7 +97,7 @@ class Login extends React.Component<Props, State> {
           {!!error && <Text style={styles.errorMsg}>{error}</Text>}
 
           <TextInput
-            onChangeText={login => this.setState({ login })}
+            onChangeText={(login) => this.setState({ login })}
             placeholder="Usuário"
             placeholderTextColor={common.colors.lightGray}
             selectionColor={common.colors.green}
@@ -114,7 +106,7 @@ class Login extends React.Component<Props, State> {
           />
 
           <TextInput
-            onChangeText={password => this.setState({ password })}
+            onChangeText={(password) => this.setState({ password })}
             placeholder="Senha"
             placeholderTextColor={common.colors.lightGray}
             selectionColor={common.colors.green}
@@ -179,11 +171,11 @@ const styles = StyleSheet.create({
   },
 })
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   authentication: state.authentication,
 })
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators(
     {
       checkAuthentication,
