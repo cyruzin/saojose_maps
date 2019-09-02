@@ -52,7 +52,6 @@ class CollectForm extends React.Component<Props, State> {
     }
   }
 
-
   componentDidMount(): void {
     this.getUserData()
     this.fetchCollectData()
@@ -110,26 +109,75 @@ class CollectForm extends React.Component<Props, State> {
       departamentoID, userData, descricao
     } = this.state
 
-    const { latitude, longitude } = this.props
+    const { latitude, longitude, area } = this.props
+    let collectID = null
 
-    try {
-      const request = await httpRequest(
-        '/coleta', {
-          method: 'POST',
-          body: {
-            latitude,
-            longitude,
-            id_departamento: departamentoID,
-            id_tipo: departamentoID,
-            id_usr_coleta: userData.userid,
-            descricao
+    if (area.length > 1) {
+      try {
+        this.setState({ fetch: true })
+        const request = await httpRequest(
+          '/coleta', {
+            method: 'POST',
+            body: {
+              latitude,
+              longitude,
+              id_departamento: departamentoID,
+              id_tipo: departamentoID,
+              id_usr_coleta: userData.userid,
+              descricao
+            }
           }
-        }
-      )
-      this.setState({ fetch: true })
-      return request
-    } catch (error) {
-      return this.setState({ error, fetch: false })
+        )
+        collectID = request.id
+      } catch (error) {
+        this.setState({ error, fetch: false })
+      }
+
+      try {
+        const coletarArea = area.map((coordinate) => ({
+          id: collectID,
+          latitude: coordinate.latitude,
+          longitude: coordinate.longitude,
+        }))
+
+        const request = await httpRequest(
+          '/coletaArea', {
+            method: 'POST',
+            body: {
+              coletarArea,
+              id_departamento: departamentoID,
+              id_tipo: departamentoID,
+              id_usr_coleta: userData.userid,
+              descricao,
+              id_coleta: collectID
+            }
+          }
+        )
+        this.setState({ fetch: false })
+        return request
+      } catch (error) {
+        return this.setState({ error, fetch: false })
+      }
+    } else {
+      try {
+        const request = await httpRequest(
+          '/coleta', {
+            method: 'POST',
+            body: {
+              latitude,
+              longitude,
+              id_departamento: departamentoID,
+              id_tipo: departamentoID,
+              id_usr_coleta: userData.userid,
+              descricao
+            }
+          }
+        )
+        this.setState({ fetch: true })
+        return request
+      } catch (error) {
+        return this.setState({ error, fetch: false })
+      }
     }
   }
 

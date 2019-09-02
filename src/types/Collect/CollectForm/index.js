@@ -1,5 +1,7 @@
 // @flow
 
+import type { Coordinates } from '../../Dashboard'
+
 export type State = {
     fetch: boolean,
     fetchSelect: boolean,
@@ -15,6 +17,7 @@ export type State = {
 }
 
 export type Props = {
+    area: Array<Coordinates>,
     latitude: string,
     longitude: string
 }

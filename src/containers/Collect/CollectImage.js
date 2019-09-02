@@ -25,7 +25,7 @@ export default function CollectImage(props: Props) {
 
       {img3 && <Image style={styles.image} source={{ uri: img3 }} />}
 
-      {!img1 && !img2 && !img3 && <Text>Não existe imagens para esta coleta</Text>}
+      {!img1 && !img2 && !img3 && <Text style={styles.noResults}>Não existem imagens para esta coleta</Text>}
     </Container>
   )
 }
