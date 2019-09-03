@@ -111,6 +111,7 @@ class CollectForm extends React.Component<Props, State> {
 
     const { latitude, longitude, area } = this.props
     let collectID = null
+    let response = null
 
     if (area.length > 1) {
       try {
@@ -129,32 +130,28 @@ class CollectForm extends React.Component<Props, State> {
           }
         )
         collectID = request.id
+        response = request
       } catch (error) {
         this.setState({ error, fetch: false })
       }
 
       try {
-        const coletarArea = area.map((coordinate) => ({
-          id: collectID,
+        const coletaArea = area.map((coordinate) => ({
           latitude: coordinate.latitude,
           longitude: coordinate.longitude,
         }))
 
-        const request = await httpRequest(
-          '/coletaArea', {
+        await httpRequest(
+          // $FlowFixMe
+          `/coletaArea/${collectID}/minhaArea`, {
             method: 'POST',
             body: {
-              coletarArea,
-              id_departamento: departamentoID,
-              id_tipo: departamentoID,
-              id_usr_coleta: userData.userid,
-              descricao,
-              id_coleta: collectID
+              id_coleta: collectID,
+              coletaArea
             }
           }
         )
-        this.setState({ fetch: false })
-        return request
+        return response
       } catch (error) {
         return this.setState({ error, fetch: false })
       }
@@ -209,7 +206,7 @@ class CollectForm extends React.Component<Props, State> {
       this.setState({ fetch: false })
       return true
     } catch (error) {
-      return this.setState({ error: 'Não possível enviar as imagens', fetch: false })
+      return this.setState({ error: 'Não foi possível enviar as imagens', fetch: false })
     }
   }
 
@@ -229,7 +226,7 @@ class CollectForm extends React.Component<Props, State> {
 
   takePicture = async (): Promise<void> => {
     if (this.camera) {
-      const options = { quality: 0.1, base64: false }
+      const options = { quality: 0.3, base64: false }
       const data = await this.camera.takePictureAsync(options)
       const { fotos, showCamera } = this.state
 

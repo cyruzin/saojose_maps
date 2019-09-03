@@ -6,10 +6,13 @@
 import React from 'react'
 import {
   Image,
-  StyleSheet
+  StyleSheet,
+  View,
+  ScrollView
 } from 'react-native'
 
 import common from '../../util/common'
+import { BASE_URL } from '../../util/constants'
 
 import type { Props } from '../../types/Collect/CollectImage'
 
@@ -19,13 +22,17 @@ export default function CollectImage(props: Props) {
   const { img1, img2, img3 } = props
   return (
     <Container style={styles.container}>
-      {img1 && <Image style={styles.image} source={{ uri: img1 }} />}
+      <ScrollView>
+        <View style={styles.imageBox}>
+          {img1 && <Image style={styles.image} source={{ uri: `${BASE_URL}/${img1}` }} />}
 
-      {img2 && <Image style={styles.image} source={{ uri: img2 }} />}
+          {img2 && <Image style={styles.image} source={{ uri: `${BASE_URL}/${img2}` }} />}
 
-      {img3 && <Image style={styles.image} source={{ uri: img3 }} />}
+          {img3 && <Image style={styles.image} source={{ uri: `${BASE_URL}/${img3}` }} />}
 
-      {!img1 && !img2 && !img3 && <Text style={styles.noResults}>Não existem imagens para esta coleta</Text>}
+          {!img1 && !img2 && !img3 && <Text style={styles.noResults}>Não existem imagens para esta coleta</Text>}
+        </View>
+      </ScrollView>
     </Container>
   )
 }
@@ -40,8 +47,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   image: {
-    width: 200,
-    height: 200
+    width: 400,
+    height: 400,
+    marginTop: 5,
+    marginBottom: 20
   },
   noResults: {
     fontSize: 18,

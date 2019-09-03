@@ -9,5 +9,6 @@ export type State = {
     latitude: number,
     longitude: number,
     marginBottom: number,
+    collected: boolean,
     error: string
 }

@@ -16,9 +16,20 @@ export function routeFix(sceneKey: string, props: Object = {}): void {
 // Close the application if it is in the root scene.
 // This is a workaround.
 export function onBackPress(): boolean {
+  if (Actions.state.index === 0 && Actions.currentScene === 'collectForm') {
+    Actions.replace('dashboard')
+    return true
+  }
+
+  if (Actions.state.index === 0 && Actions.currentScene === 'collectList') {
+    Actions.replace('dashboard')
+    return true
+  }
+
   if (Actions.state.index === 0) {
     return false
   }
+
   Actions.pop()
   return true
 }
