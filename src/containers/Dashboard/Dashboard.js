@@ -37,7 +37,7 @@ import LimitesJuridicos from '../../assets/LIMITES_JURIDICOS.json'
 // import Talhoes858687899192939697 from '../../assets/TALHOES_IMOV_085_086_087_089_091_092_093_096_097.json'
 // import Talhoes110114115116118 from '../../assets/TALHOES_IMOV_110_114_115_116_118.json'
 
-class Dashboard extends React.Component<{}, State> {
+class Dashboard extends React.PureComponent<{}, State> {
   constructor(props: any) {
     super(props)
 
