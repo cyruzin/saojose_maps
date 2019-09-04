@@ -5,39 +5,27 @@
 
 import React from 'react'
 import {
-  StyleSheet, ScrollView, ActivityIndicator
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  TouchableHighlight
 } from 'react-native'
+
 import AsyncStorage from '@react-native-community/async-storage'
 import debounce from 'lodash/debounce'
+
 import common from '../../util/common'
 import { httpRequest } from '../../util/request'
-import {
-  Container, Text, Alert, TextInput
-} from '../../components/UI'
+import { routeFix } from '../../util/helpers'
 
-type State = {
-  fetch: boolean,
-  data: [
-    {
-      id: number | string,
-      classificacao: string,
-      uso_solo: string,
-      imovel: string,
-      area_ha: number | string,
-      bloco: number | string,
-      latitude: number | string,
-      longitude: number | string,
-      descricao: string | null,
-      id_usr_coleta: number | string,
-      id_departamento: number | string,
-      id_pendencia: number | string,
-      id_tipo: number | string,
-      dt_cadastro: string
-    }
-  ],
-  userData: Object,
-  error: string
-};
+import type { State } from '../../types/Collect/CollectList'
+
+import {
+  Container,
+  Text,
+  Alert,
+  TextInput
+} from '../../components/UI'
 
 class CollectList extends React.Component<{}, State> {
   constructor(props: any) {
@@ -62,18 +50,24 @@ class CollectList extends React.Component<{}, State> {
           dt_cadastro: '',
         },
       ],
-      userData: {},
+      userData: {
+        user: '',
+        userid: '',
+        username: '',
+        usermail: '',
+        expires: 0
+      },
       error: ''
     }
 
     this.searchHandler = debounce(this.searchHandler, 800)
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     this.getUserData()
   }
 
-  getUserData = () => {
+  getUserData = (): void => {
     AsyncStorage.getItem('token')
       .then((value) => {
         if (value !== null) {
@@ -82,17 +76,30 @@ class CollectList extends React.Component<{}, State> {
         }
       })
       .then(() => this.fetchCollect())
-  };
+  }
 
-  fetchCollect = () => {
+  fetchCollect = (): void => {
     this.setState({ fetch: true })
     const { userData } = this.state
     httpRequest(`/coleta/${userData.userid}/minhaColeta`, { method: 'GET' })
-      .then(response => this.setState({ data: response, fetch: false }))
-      .catch(error => this.setState({ error, fetch: false }))
-  };
+      .then((response) => this.setState({ data: response, fetch: false }))
+      .catch((error) => this.setState({ error, fetch: false }))
+  }
 
-  searchHandler = (searchKeyword: string) => {
+  fetchImages = (collectID: number | string): void => {
+    this.setState({ fetch: true })
+    httpRequest(`/coleta/${collectID}/minhaImagem`, { method: 'GET' })
+      .then((response) => {
+        console.log(response)
+        this.setState({ fetch: false }, () => routeFix('collectImage', {
+          img1: response.length > 1 ? response[0] : response,
+          img2: response[1],
+          img3: response[2]
+        }))
+      }).catch((error) => this.setState({ error, fetch: false }))
+  }
+
+  searchHandler = (searchKeyword: string): void => {
     if (searchKeyword === '') { return this.fetchCollect() }
 
     this.setState({ fetch: true })
@@ -102,8 +109,8 @@ class CollectList extends React.Component<{}, State> {
     return httpRequest(`/coleta/${userData.userid}/buscaColeta`, {
       method: 'POST',
       body: { query: searchKeyword.trim() }
-    }).then(response => this.setState({ data: response, fetch: false }))
-      .catch(error => this.setState({ error, fetch: false }))
+    }).then((response) => this.setState({ data: response, fetch: false }))
+      .catch((error) => this.setState({ error, fetch: false }))
   }
 
   render() {
@@ -120,7 +127,7 @@ class CollectList extends React.Component<{}, State> {
               placeholderTextColor={common.colors.lightGray}
               selectionColor={common.colors.green}
               style={styles.input}
-              onChangeText={id => this.searchHandler(id)}
+              onChangeText={(id) => this.searchHandler(id)}
             />
           )}
 
@@ -137,14 +144,14 @@ class CollectList extends React.Component<{}, State> {
 
           {!fetch
             && error === ''
-            && data && data.map(list => (
+            && data && data.map((list) => (
               <Container key={list.id} style={styles.content}>
-                <Container style={styles.titleBox}>
-                  <Text style={styles.title}>
+                <TouchableHighlight style={styles.titleBox}>
+                  <Text style={styles.title} onPress={() => this.fetchImages(list.id)}>
                     Coleta #
                     {list.id}
                   </Text>
-                </Container>
+                </TouchableHighlight>
                 <Container style={styles.textBox}>
                   <Text style={styles.text}>
                     Classificação:
@@ -170,16 +177,6 @@ class CollectList extends React.Component<{}, State> {
                     Bloco:
                     {' '}
                     {list.bloco || empty}
-                  </Text>
-                  <Text style={styles.text}>
-                    Latitude:
-                    {' '}
-                    {list.latitude || empty}
-                  </Text>
-                  <Text style={styles.text}>
-                    Longitude:
-                    {' '}
-                    {list.longitude || empty}
                   </Text>
                   <Text style={styles.text}>
                     Observação:

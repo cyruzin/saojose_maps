@@ -110,6 +110,6 @@ export const checkAuthentication = (
 ): ThunkAction => (dispatch) => {
   dispatch(fetchAuthentication())
   return httpRequestAuthetication({ body: credentials })
-    .then(response => dispatch(successAuthentication(response)))
-    .catch(error => dispatch(failureAuthentication(error)))
+    .then((response) => dispatch(successAuthentication(response)))
+    .catch((error) => dispatch(failureAuthentication(error)))
 }
