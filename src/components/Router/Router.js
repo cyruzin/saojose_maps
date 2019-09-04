@@ -1,15 +1,16 @@
 import React from 'react'
+
 import { Router, Scene, Drawer } from 'react-native-router-flux'
+
 import common from '../../util/common'
 import { onBackPress, loadState, checkTokenExpiration } from '../../util/helpers'
+
 import DrawerMenu from '../DrawerMenu/DrawerMenu'
 import Login from '../../containers/Login/Login'
 import Dashboard from '../../containers/Dashboard/Dashboard'
-import Collect from '../../containers/Collect/Collect'
 import CollectList from '../../containers/Collect/CollectList'
-import CollectPoint from '../../containers/Collect/CollectPoint'
 import CollectForm from '../../containers/Collect/CollectForm'
-import GeoLocation from '../../containers/GeoLocation/GeoLocation'
+import CollectImage from '../../containers/Collect/CollectImage'
 
 export default () => (
   <Router
@@ -35,11 +36,9 @@ export default () => (
       >
         <Scene key="home">
           <Scene key="dashboard" component={Dashboard} />
-          <Scene key="collect" component={Collect} />
           <Scene key="collectList" component={CollectList} />
-          <Scene key="collectPoint" component={CollectPoint} />
           <Scene key="collectForm" component={CollectForm} />
-          <Scene key="geolocation" component={GeoLocation} />
+          <Scene key="collectImage" component={CollectImage} />
         </Scene>
       </Drawer>
     </Scene>
