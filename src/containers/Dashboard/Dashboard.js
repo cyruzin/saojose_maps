@@ -25,17 +25,17 @@ import type { State } from '../../types/Dashboard'
 import { Alert, Text } from '../../components/UI'
 
 import LimitesJuridicos from '../../assets/LIMITES_JURIDICOS.json'
-import Talhoes304050 from '../../assets/TALHOES_IMOV_030_040_050.json'
-import Talhoes606162 from '../../assets/TALHOES_IMOV_060_061_062.json'
-import Talhoes636465 from '../../assets/TALHOES_IMOV_063_064_065.json'
-import Talhoes666768 from '../../assets/TALHOES_IMOV_066_067_068.json'
-import Talhoes6970 from '../../assets/TALHOES_IMOV_069_070.json'
-import Talhoes71 from '../../assets/TALHOES_IMOV_071.json'
-import Talhoes7273 from '../../assets/TALHOES_IMOV_072_073.json'
-import Talhoes747778 from '../../assets/TALHOES_IMOV_074_077_078.json'
-import Talhoes7576 from '../../assets/TALHOES_IMOV_075_076.json'
-import Talhoes858687899192939697 from '../../assets/TALHOES_IMOV_085_086_087_089_091_092_093_096_097.json'
-import Talhoes110114115116118 from '../../assets/TALHOES_IMOV_110_114_115_116_118.json'
+// import Talhoes304050 from '../../assets/TALHOES_IMOV_030_040_050.json'
+// import Talhoes606162 from '../../assets/TALHOES_IMOV_060_061_062.json'
+// import Talhoes636465 from '../../assets/TALHOES_IMOV_063_064_065.json'
+// import Talhoes666768 from '../../assets/TALHOES_IMOV_066_067_068.json'
+// import Talhoes6970 from '../../assets/TALHOES_IMOV_069_070.json'
+// import Talhoes71 from '../../assets/TALHOES_IMOV_071.json'
+// import Talhoes7273 from '../../assets/TALHOES_IMOV_072_073.json'
+// import Talhoes747778 from '../../assets/TALHOES_IMOV_074_077_078.json'
+// import Talhoes7576 from '../../assets/TALHOES_IMOV_075_076.json'
+// import Talhoes858687899192939697 from '../../assets/TALHOES_IMOV_085_086_087_089_091_092_093_096_097.json'
+// import Talhoes110114115116118 from '../../assets/TALHOES_IMOV_110_114_115_116_118.json'
 
 class Dashboard extends React.Component<{}, State> {
   constructor(props: any) {
@@ -152,7 +152,7 @@ class Dashboard extends React.Component<{}, State> {
             strokeWidth={1.5}
             strokeColor={common.colors.red}
           />
-          <Geojson
+          {/* <Geojson
             geojson={Talhoes304050}
             strokeWidth={1.5}
             strokeColor={common.colors.white}
@@ -206,7 +206,7 @@ class Dashboard extends React.Component<{}, State> {
             geojson={Talhoes110114115116118}
             strokeWidth={1.5}
             strokeColor={common.colors.lightPurple}
-          />
+          /> */}
         </MapView>
 
         {
