@@ -7,13 +7,14 @@ import * as React from 'react'
 import {
   StyleSheet,
   View,
-  TouchableHighlight
+  TouchableHighlight,
+  CheckBox
 } from 'react-native'
 
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
 import { Actions } from 'react-native-router-flux'
 import Geolocation from '@react-native-community/geolocation'
-import CheckBox from '@react-native-community/checkbox'
+// import CheckBox from '@react-native-community/checkbox'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { FloatingAction } from 'react-native-floating-action'
 import Geojson from 'react-native-geojson'
