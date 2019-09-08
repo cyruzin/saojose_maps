@@ -10,7 +10,7 @@ export default {
     black: '#000000',
     pink: '#F542F5',
     lightPink: '#ECE1F5',
-    cyan: '#F542F5',
+    cyan: '#00FFFF',
     cream: '#F59C42',
     purple: '#8F0CF2',
     lightPurple: '#918FF7'
