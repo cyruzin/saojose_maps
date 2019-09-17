@@ -90,11 +90,11 @@ class CollectList extends React.Component<{}, State> {
     this.setState({ fetch: true })
     httpRequest(`/coleta/${collectID}/minhaImagem`, { method: 'GET' })
       .then((response) => {
-        console.log(response)
         this.setState({ fetch: false }, () => routeFix('collectImage', {
           img1: response.length > 1 ? response[0] : response,
           img2: response[1],
-          img3: response[2]
+          img3: response[2],
+          collectID
         }))
       }).catch((error) => this.setState({ error, fetch: false }))
   }

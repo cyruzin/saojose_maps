@@ -19,11 +19,19 @@ import type { Props } from '../../types/Collect/CollectImage'
 import { Container, Text } from '../../components/UI'
 
 export default function CollectImage(props: Props) {
-  const { img1, img2, img3 } = props
+  const {
+    collectID, img1, img2, img3
+  } = props
   return (
     <Container style={styles.container}>
       <ScrollView>
         <View style={styles.imageBox}>
+          <Text style={styles.title}>
+Coleta #
+            {collectID}
+            {' '}
+- Imagens
+          </Text>
           {img1 && <Image style={styles.image} source={{ uri: `${BASE_URL}/${img1}` }} />}
 
           {img2 && <Image style={styles.image} source={{ uri: `${BASE_URL}/${img2}` }} />}
@@ -41,6 +49,12 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     backgroundColor: common.colors.dark
+  },
+  title: {
+    color: common.colors.white,
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10
   },
   imageBox: {
     flex: 1,
