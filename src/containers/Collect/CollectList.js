@@ -8,24 +8,19 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
-  TouchableHighlight
+  TouchableHighlight,
 } from 'react-native'
 
 import AsyncStorage from '@react-native-community/async-storage'
 import debounce from 'lodash/debounce'
 
 import common from '../../util/common'
-import { httpRequest } from '../../util/request'
-import { routeFix } from '../../util/helpers'
+import {httpRequest} from '../../util/request'
+import {routeFix} from '../../util/helpers'
 
-import type { State } from '../../types/Collect/CollectList'
+import type {State} from '../../types/Collect/CollectList'
 
-import {
-  Container,
-  Text,
-  Alert,
-  TextInput
-} from '../../components/UI'
+import {Container, Text, Alert, TextInput} from '../../components/UI'
 
 class CollectList extends React.Component<{}, State> {
   constructor(props: any) {
@@ -55,9 +50,9 @@ class CollectList extends React.Component<{}, State> {
         userid: '',
         username: '',
         usermail: '',
-        expires: 0
+        expires: 0,
       },
-      error: ''
+      error: '',
     }
 
     this.searchHandler = debounce(this.searchHandler, 800)
@@ -69,52 +64,72 @@ class CollectList extends React.Component<{}, State> {
 
   getUserData = (): void => {
     AsyncStorage.getItem('token')
-      .then((value) => {
+      .then(value => {
         if (value !== null) {
           const data = JSON.parse(value)
-          this.setState({ userData: data.userData })
+          this.setState({userData: data.userData})
         }
       })
       .then(() => this.fetchCollect())
   }
 
-  fetchCollect = (): void => {
-    this.setState({ fetch: true })
-    const { userData } = this.state
-    httpRequest(`/coleta/${userData.userid}/minhaColeta`, { method: 'GET' })
-      .then((response) => this.setState({ data: response, fetch: false }))
-      .catch((error) => this.setState({ error, fetch: false }))
+  fetchCollect = async (): Promise<void> => {
+    this.setState({fetch: true})
+    const {userData} = this.state
+    console.log('fetchCollect')
+    try {
+      const response = await httpRequest(
+        `/coleta/${userData.userid}/minhaColeta`,
+        {
+          method: 'GET',
+        },
+      )
+      this.setState({data: response, fetch: false})
+    } catch (error) {
+      this.setState({error, fetch: false})
+    }
   }
 
-  fetchImages = (collectID: number | string): void => {
-    this.setState({ fetch: true })
-    httpRequest(`/coleta/${collectID}/minhaImagem`, { method: 'GET' })
-      .then((response) => {
-        this.setState({ fetch: false }, () => routeFix('collectImage', {
+  fetchImages = async (collectID: number | string): Promise<void> => {
+    this.setState({fetch: true})
+    try {
+      const response = await httpRequest(`/coleta/${collectID}/minhaImagem`, {
+        method: 'GET',
+      })
+
+      this.setState({fetch: false}, () =>
+        routeFix('collectImage', {
           img1: response.length > 1 ? response[0] : response,
           img2: response[1],
           img3: response[2],
-          collectID
-        }))
-      }).catch((error) => this.setState({ error, fetch: false }))
+          collectID,
+        }),
+      )
+    } catch (error) {
+      console.log(error)
+      this.setState({error, fetch: false})
+    }
   }
 
-  searchHandler = (searchKeyword: string): void => {
-    if (searchKeyword === '') { return this.fetchCollect() }
+  searchHandler = (searchKeyword: string): Promise<void> => {
+    if (searchKeyword === '') {
+      return this.fetchCollect()
+    }
 
-    this.setState({ fetch: true })
+    this.setState({fetch: true})
 
-    const { userData } = this.state
+    const {userData} = this.state
 
     return httpRequest(`/coleta/${userData.userid}/buscaColeta`, {
       method: 'POST',
-      body: { query: searchKeyword.trim() }
-    }).then((response) => this.setState({ data: response, fetch: false }))
-      .catch((error) => this.setState({ error, fetch: false }))
+      body: {query: searchKeyword.trim()},
+    })
+      .then(response => this.setState({data: response, fetch: false}))
+      .catch(error => this.setState({error, fetch: false}))
   }
 
   render() {
-    const { fetch, data, error } = this.state
+    const {fetch, data, error} = this.state
     const empty = '-'
 
     return (
@@ -127,14 +142,13 @@ class CollectList extends React.Component<{}, State> {
               placeholderTextColor={common.colors.lightGray}
               selectionColor={common.colors.green}
               style={styles.input}
-              onChangeText={(id) => this.searchHandler(id)}
+              onChangeText={id => this.searchHandler(id)}
             />
           )}
 
-          {!fetch && data === null
-            && (
-              <Text style={styles.searchNoResult}>Nenhum Resultado</Text>
-            )}
+          {!fetch && data === null && (
+            <Text style={styles.searchNoResult}>Nenhum Resultado</Text>
+          )}
 
           {fetch && <ActivityIndicator color={common.colors.white} />}
 
@@ -142,75 +156,51 @@ class CollectList extends React.Component<{}, State> {
             <Alert color={common.colors.red} msg={error} />
           )}
 
-          {!fetch
-            && error === ''
-            && data && data.map((list) => (
+          {!fetch &&
+            error === '' &&
+            data &&
+            data.map(list => (
               <Container key={list.id} style={styles.content}>
                 <TouchableHighlight style={styles.titleBox}>
-                  <Text style={styles.title} onPress={() => this.fetchImages(list.id)}>
-                    Coleta #
-                    {list.id}
+                  <Text
+                    style={styles.title}
+                    onPress={() => this.fetchImages(list.id)}>
+                    Coleta #{list.id}
                   </Text>
                 </TouchableHighlight>
                 <Container style={styles.textBox}>
                   <Text style={styles.text}>
-                    Classificação:
-                    {' '}
-                    {list.classificacao || empty}
+                    Classificação: {list.classificacao || empty}
                   </Text>
                   <Text style={styles.text}>
-                    Uso Solo:
-                    {' '}
-                    {list.uso_solo || empty}
+                    Uso Solo: {list.uso_solo || empty}
                   </Text>
                   <Text style={styles.text}>
-                    Imovel:
-                    {' '}
-                    {list.imovel || empty}
+                    Imovel: {list.imovel || empty}
                   </Text>
                   <Text style={styles.text}>
-                    Área HA:
-                    {' '}
-                    {list.area_ha || empty}
+                    Área HA: {list.area_ha || empty}
+                  </Text>
+                  <Text style={styles.text}>Bloco: {list.bloco || empty}</Text>
+                  <Text style={styles.text}>
+                    Observação: {list.descricao || empty}
                   </Text>
                   <Text style={styles.text}>
-                    Bloco:
-                    {' '}
-                    {list.bloco || empty}
+                    Usuário Coleta: {list.id_usr_coleta || empty}
                   </Text>
                   <Text style={styles.text}>
-                    Observação:
-                    {' '}
-                    {list.descricao || empty}
+                    Departamento: {list.id_departamento || empty}
                   </Text>
                   <Text style={styles.text}>
-                    Usuário Coleta:
-                    {' '}
-                    {list.id_usr_coleta || empty}
+                    Pendência: {list.id_pendencia || empty}
                   </Text>
+                  <Text style={styles.text}>Tipo: {list.id_tipo || empty}</Text>
                   <Text style={styles.text}>
-                    Departamento:
-                    {' '}
-                    {list.id_departamento || empty}
-                  </Text>
-                  <Text style={styles.text}>
-                    Pendência:
-                    {' '}
-                    {list.id_pendencia || empty}
-                  </Text>
-                  <Text style={styles.text}>
-                    Tipo:
-                    {' '}
-                    {list.id_tipo || empty}
-                  </Text>
-                  <Text style={styles.text}>
-                    Data:
-                    {' '}
-                    {list.dt_cadastro || empty}
+                    Data: {list.dt_cadastro || empty}
                   </Text>
                 </Container>
               </Container>
-          ))}
+            ))}
         </ScrollView>
       </Container>
     )
@@ -220,37 +210,37 @@ class CollectList extends React.Component<{}, State> {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    backgroundColor: common.colors.dark
+    backgroundColor: common.colors.dark,
   },
   content: {
-    marginBottom: 10
+    marginBottom: 10,
   },
   titleBox: {
-    backgroundColor: common.colors.green
+    backgroundColor: common.colors.green,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
     padding: 10,
-    color: common.colors.white
+    color: common.colors.white,
   },
   textBox: {
     padding: 10,
     borderBottomWidth: 1,
     borderLeftWidth: 1,
     borderRightWidth: 1,
-    borderColor: common.colors.white
+    borderColor: common.colors.white,
   },
   text: {
     marginBottom: 5,
-    color: common.colors.white
+    color: common.colors.white,
   },
   searchNoResult: {
     marginTop: 20,
     color: common.colors.white,
     fontSize: 16,
     textAlign: 'center',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   input: {
     marginBottom: 20,

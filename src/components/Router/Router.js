@@ -1,9 +1,9 @@
 import React from 'react'
 
-import { Router, Scene, Drawer } from 'react-native-router-flux'
+import {Router, Scene, Drawer} from 'react-native-router-flux'
 
 import common from '../../util/common'
-import { onBackPress, loadState, checkTokenExpiration } from '../../util/helpers'
+import {onBackPress, loadState, checkTokenExpiration} from '../../util/helpers'
 
 import DrawerMenu from '../DrawerMenu/DrawerMenu'
 import Login from '../../containers/Login/Login'
@@ -14,9 +14,8 @@ import CollectImage from '../../containers/Collect/CollectImage'
 
 export default () => (
   <Router
-    navigationBarStyle={{ backgroundColor: common.colors.dark }}
-    backAndroidHandler={onBackPress}
-  >
+    navigationBarStyle={{backgroundColor: common.colors.dark}}
+    backAndroidHandler={onBackPress}>
     <Scene key="root">
       <Scene
         key="login"
@@ -32,8 +31,7 @@ export default () => (
         contentComponent={DrawerMenu}
         drawerWidth={250}
         tintColor={common.colors.white}
-        hideNavBar
-      >
+        hideNavBar>
         <Scene key="home">
           <Scene key="dashboard" component={Dashboard} />
           <Scene key="collectList" component={CollectList} />

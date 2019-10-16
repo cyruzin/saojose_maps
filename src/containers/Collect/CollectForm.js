@@ -11,36 +11,35 @@ import {
   TouchableOpacity,
   View,
   Image,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native'
 
-import { Actions } from 'react-native-router-flux'
+import {Actions} from 'react-native-router-flux'
 import AsyncStorage from '@react-native-community/async-storage'
-import { RNCamera } from 'react-native-camera'
+import {RNCamera} from 'react-native-camera'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
-import { httpRequest } from '../../util/request'
-import { UPLOAD_ACCESS_KEY } from '../../util/constants'
+import {httpRequest} from '../../util/request'
+import {UPLOAD_ACCESS_KEY} from '../../util/constants'
 import common from '../../util/common'
 
-import type { State, Props } from '../../types/Collect/CollectForm'
+import type {State, Props} from '../../types/Collect/CollectForm'
 
-import {
-  Container,
-  Text,
-  Button,
-  Alert,
-  TextInput
-} from '../../components/UI'
+import {Container, Text, Button, Alert, TextInput} from '../../components/UI'
 
 class CollectForm extends React.Component<Props, State> {
+  camera: ?any
+
   constructor(props: Props) {
     super(props)
+
+    this.camera = React.createRef()
 
     this.state = {
       fetch: false,
       fetchSelect: false,
       showCamera: false,
+      camera: {},
       fotos: [],
       coletaDepartamento: [],
       departamentoID: '',
@@ -48,7 +47,7 @@ class CollectForm extends React.Component<Props, State> {
       tipoID: '',
       userData: {},
       descricao: '',
-      error: ''
+      error: '',
     }
   }
 
@@ -57,218 +56,190 @@ class CollectForm extends React.Component<Props, State> {
     this.fetchCollectData()
   }
 
-  fetchCollectData = (): void => {
-    this.setState({ fetchSelect: true })
-    Promise.all([
-      httpRequest('/coletaDepart', { method: 'GET' }),
-      httpRequest('/coletaTipo', { method: 'GET' })
-    ]).then(([coletaDepartamento, coletaTipo]) => {
+  fetchCollectData = async (): Promise<void> => {
+    this.setState({fetchSelect: true})
+    try {
+      const [coletaDepartamento, coletaTipo] = await Promise.all([
+        httpRequest('/coletaDepart', {method: 'GET'}),
+        httpRequest('/coletaTipo', {method: 'GET'}),
+      ])
       this.setState({
         coletaDepartamento,
         coletaTipo,
-        fetchSelect: false
+        fetchSelect: false,
       })
-    }).catch((error) => this.setState({ error, fetchSelect: false }))
+    } catch (error) {
+      this.setState({error, fetchSelect: false})
+    }
   }
 
-  getUserData = (): void => {
-    AsyncStorage.getItem('token')
-      .then((value) => {
-        if (value !== null) {
-          const data = JSON.parse(value)
-          this.setState({ userData: data.userData })
-        }
-      })
+  getUserData = async (): Promise<void> => {
+    const value = await AsyncStorage.getItem('token')
+    if (value !== null) {
+      const data = JSON.parse(value)
+      this.setState({userData: data.userData})
+    }
   }
 
-  sendData = (): void => {
-    const { departamentoID, tipoID, fotos } = this.state
+  sendData = async (): Promise<void> => {
+    const {departamentoID, tipoID, fotos} = this.state
 
     if (departamentoID === '' || tipoID === '') {
       this.alert('Atenção', 'Preecha todos os campos')
       return
     }
+    const response = await this.sendCollect()
 
-    this.sendCollect()
-      .then((response) => {
-        if (fotos.length === 0) {
-          this.alert('Sucesso', 'Coleta realizada', () => Actions.replace('collectList'))
-          return
-        }
-        this.sendImages(response)
-          .then((responseImages) => {
-            if (responseImages) {
-              this.alert('Sucesso', 'Coleta realizada', () => Actions.replace('collectList'))
-            }
-          })
-      })
+    if (fotos.length === 0) {
+      this.alert('Sucesso', 'Coleta realizada', () =>
+        Actions.replace('collectList'),
+      )
+      return
+    }
+    const responseImages = await this.sendImages(response)
+    if (responseImages) {
+      this.alert('Sucesso', 'Coleta realizada', () =>
+        Actions.replace('collectList'),
+      )
+    }
   }
 
   sendCollect = async (): Promise<any> => {
-    const {
-      departamentoID, userData, descricao
-    } = this.state
+    const {departamentoID, userData, descricao} = this.state
 
-    const { latitude, longitude, area } = this.props
-    let collectID = null
-    let response = null
+    const {latitude, longitude, area} = this.props
 
-    if (area.length > 1) {
-      try {
-        this.setState({ fetch: true })
-        const request = await httpRequest(
-          '/coleta', {
-            method: 'POST',
-            body: {
-              latitude,
-              longitude,
-              id_departamento: departamentoID,
-              id_tipo: departamentoID,
-              id_usr_coleta: userData.userid,
-              descricao
-            }
-          }
-        )
-        collectID = request.id
-        response = request
-      } catch (error) {
-        this.setState({ error, fetch: false })
-      }
+    try {
+      this.setState({fetch: true})
+      const response = await httpRequest('/coleta', {
+        method: 'POST',
+        body: {
+          latitude,
+          longitude,
+          id_departamento: departamentoID,
+          id_tipo: departamentoID,
+          id_usr_coleta: userData.userid,
+          descricao,
+        },
+      })
 
-      try {
-        const coletaArea = area.map((coordinate) => ({
+      console.log('area length', area.length)
+
+      if (area.length > 1) {
+        const coletaArea = area.map(coordinate => ({
           latitude: coordinate.latitude,
           longitude: coordinate.longitude,
         }))
-
-        await httpRequest(
-          // $FlowFixMe
-          `/coletaArea/${collectID}/minhaArea`, {
-            method: 'POST',
-            body: {
-              id_coleta: collectID,
-              coletaArea
-            }
-          }
-        )
-        return response
-      } catch (error) {
-        return this.setState({ error, fetch: false })
+        await httpRequest(`/coletaArea/${response.id}/minhaArea`, {
+          method: 'POST',
+          body: {
+            id_coleta: response.id,
+            coletaArea,
+          },
+        })
+      } else {
+        this.setState({fetch: true})
       }
-    } else {
-      try {
-        const request = await httpRequest(
-          '/coleta', {
-            method: 'POST',
-            body: {
-              latitude,
-              longitude,
-              id_departamento: departamentoID,
-              id_tipo: departamentoID,
-              id_usr_coleta: userData.userid,
-              descricao
-            }
-          }
-        )
-        this.setState({ fetch: true })
-        return request
-      } catch (error) {
-        return this.setState({ error, fetch: false })
-      }
+      return response
+    } catch (error) {
+      console.error(error)
+      return this.setState({error, fetch: false})
     }
   }
 
   sendImages = async (response: Object): any => {
     try {
-      const { fotos } = this.state
-      const { id } = response
-      const form = new FormData()
-
+      const {fotos} = this.state
+      const {id} = response
+      const form: any = new FormData()
       fotos.forEach((value, index) => {
         form.append('arquivo[]', {
           uri: value.uri,
           type: 'image/jpeg',
-          name: `image${index + 1}`
+          name: `image${index + 1}`,
         })
       })
 
       const responseImages = await fetch(
-        `http://dev.gddoc.com.br/maps_sj/gravaimg/${UPLOAD_ACCESS_KEY}/${id}`, {
+        `http://dev.gddoc.com.br/maps_sj/gravaimg/${UPLOAD_ACCESS_KEY}/${id}`,
+        {
           method: 'POST',
           body: form,
           headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        }
+            'Content-Type': 'multipart/form-data',
+          },
+        },
       )
       await responseImages.json()
-      if (!responseImages.ok) this.setState({ fetch: false })
-      this.setState({ fetch: false })
+      if (!responseImages.ok) this.setState({fetch: false})
+      this.setState({fetch: false})
       return true
     } catch (error) {
-      return this.setState({ error: 'Não foi possível enviar as imagens', fetch: false })
-    }
-  }
-
-  alert = (title: string, body: string, callback: any): void => {
-    AlertRN.alert(
-      title,
-      body,
-      [{ text: 'OK', onPress: callback }],
-      { cancelable: false }
-    )
-  }
-
-  toggleCamera = (): void => {
-    const { showCamera } = this.state
-    this.setState({ showCamera: !showCamera })
-  }
-
-  takePicture = async (): Promise<void> => {
-    if (this.camera) {
-      const options = { quality: 0.3, base64: false }
-      const data = await this.camera.takePictureAsync(options)
-      const { fotos, showCamera } = this.state
-
-      this.setState({
-        fotos: [...fotos, { uri: data.uri }],
-        showCamera: !showCamera
+      console.error(error)
+      return this.setState({
+        error: 'Não foi possível enviar as imagens',
+        fetch: false,
       })
     }
   }
 
+  alert = (title: string, body: string, callback: any): void => {
+    AlertRN.alert(title, body, [{text: 'OK', onPress: callback}], {
+      cancelable: false,
+    })
+  }
+
+  toggleCamera = (): void => {
+    const {showCamera} = this.state
+    this.setState({showCamera: !showCamera})
+  }
+
+  takePicture = async (): Promise<void> => {
+    if (!this.camera) return
+
+    const options = {quality: 0.3, base64: false}
+    const data = await this.camera.current.takePictureAsync(options)
+    const {fotos, showCamera} = this.state
+
+    this.setState({
+      fotos: [...fotos, {uri: data.uri}],
+      showCamera: !showCamera,
+    })
+  }
+
   removePicture = (foto: Object): void => {
     this.alert('Remover', 'Tem certeza que deseja remover essa foto?', () => {
-      const newFotos = this.state.fotos.filter((f) => f.uri !== foto.uri)
-      this.setState({ fotos: newFotos })
+      const newFotos = this.state.fotos.filter(f => f.uri !== foto.uri)
+      this.setState({fotos: newFotos})
     })
   }
 
   render() {
     const {
-      fetch, fetchSelect, showCamera, fotos, coletaDepartamento,
-      departamentoID, coletaTipo, tipoID, descricao, error
+      fetch,
+      fetchSelect,
+      showCamera,
+      fotos,
+      coletaDepartamento,
+      departamentoID,
+      coletaTipo,
+      tipoID,
+      descricao,
+      error,
     } = this.state
 
     return (
       <Container style={styles.container}>
+        {fetchSelect && (
+          <ActivityIndicator
+            style={styles.activityIndicator}
+            color={common.colors.white}
+          />
+        )}
 
-        {fetchSelect
-          && (
-            <ActivityIndicator
-              style={styles.activityIndicator}
-              color={common.colors.white}
-            />
-          )}
-
-        {!fetchSelect
-          && !fetch && error !== ''
-          && (
-            <Alert
-              color={common.colors.red}
-              msg={error}
-            />
-          )}
+        {!fetchSelect && !fetch && error !== '' && (
+          <Alert color={common.colors.red} msg={error} />
+        )}
 
         {!fetchSelect && !showCamera && (
           <>
@@ -278,19 +249,14 @@ class CollectForm extends React.Component<Props, State> {
               selectedValue={departamentoID}
               style={styles.picker}
               itemStyle={styles.pickerItem}
-              onValueChange={(id) => {
+              onValueChange={id => {
                 if (id !== -1) {
-                  this.setState({ departamentoID: id })
+                  this.setState({departamentoID: id})
                 }
-              }}
-            >
+              }}>
               <Picker.Item label="Selecione um departamento" value={-1} />
-              {coletaDepartamento.map((dep) => (
-                <Picker.Item
-                  key={dep.id}
-                  label={dep.nome}
-                  value={dep.id}
-                />
+              {coletaDepartamento.map(dep => (
+                <Picker.Item key={dep.id} label={dep.nome} value={dep.id} />
               ))}
             </Picker>
 
@@ -298,19 +264,14 @@ class CollectForm extends React.Component<Props, State> {
               selectedValue={tipoID}
               style={styles.picker}
               itemStyle={styles.pickerItem}
-              onValueChange={(id) => {
+              onValueChange={id => {
                 if (id !== -1) {
-                  this.setState({ tipoID: id })
+                  this.setState({tipoID: id})
                 }
-              }}
-            >
+              }}>
               <Picker.Item label="Selecione um tipo" value={-1} />
-              {coletaTipo.map((dep) => (
-                <Picker.Item
-                  key={dep.id}
-                  label={dep.nome}
-                  value={dep.id}
-                />
+              {coletaTipo.map(dep => (
+                <Picker.Item key={dep.id} label={dep.nome} value={dep.id} />
               ))}
             </Picker>
 
@@ -322,7 +283,7 @@ class CollectForm extends React.Component<Props, State> {
               multiline
               numberOfLines={2}
               value={descricao}
-              onChangeText={(obs) => this.setState({ descricao: obs })}
+              onChangeText={obs => this.setState({descricao: obs})}
             />
 
             {fotos.length < 3 ? (
@@ -336,57 +297,45 @@ class CollectForm extends React.Component<Props, State> {
                   top: 30,
                   left: 30,
                   bottom: 30,
-                  right: 30
-                }}
-              >
-                <Icon
-                  name="camera"
-                  size={16}
-                  color={common.colors.white}
-                />
+                  right: 30,
+                }}>
+                <Icon name="camera" size={16} color={common.colors.white} />
                 {'  '}
                 Capturar Imagem
               </Text>
-            )
-              : (
-                <Text style={{
+            ) : (
+              <Text
+                style={{
                   color: common.colors.white,
                   padding: 15,
                   fontSize: 14,
-                  fontWeight: 'bold'
-                }}
-                >
-                  Quantidade máxima de fotos atingida
-                </Text>
-              )}
+                  fontWeight: 'bold',
+                }}>
+                Quantidade máxima de fotos atingida
+              </Text>
+            )}
 
-            {fotos.length > 0
-              && (
-                <>
-                  <Text style={styles.imageAttachment}>
-                    Fotos em anexo:
-                    {' '}
-                    {fotos.length}
-                  </Text>
-                  <View style={styles.imageBox}>
-                    {fotos.length > 0 && fotos.map((foto) => (
+            {fotos.length > 0 && (
+              <>
+                <Text style={styles.imageAttachment}>
+                  Fotos em anexo: {fotos.length}
+                </Text>
+                <View style={styles.imageBox}>
+                  {fotos.length > 0 &&
+                    fotos.map(foto => (
                       <View key={foto.uri}>
-                        <Image
-                          source={{ uri: foto.uri }}
-                          style={styles.image}
-                        />
+                        <Image source={{uri: foto.uri}} style={styles.image} />
                         <Text
                           style={styles.imageText}
                           hitSlop={styles.imageTextHitSlop}
-                          onPress={() => this.removePicture(foto)}
-                        >
+                          onPress={() => this.removePicture(foto)}>
                           X
                         </Text>
                       </View>
                     ))}
-                  </View>
-                </>
-              )}
+                </View>
+              </>
+            )}
 
             <Button
               title={!fetch ? 'ENVIAR' : 'ENVIANDO...'}
@@ -397,23 +346,22 @@ class CollectForm extends React.Component<Props, State> {
           </>
         )}
 
-        {showCamera
-          && (
-            <View style={styles.cameraBox}>
-              <RNCamera
-                ref={(ref) => this.camera = ref}
-                style={styles.preview}
-                type={RNCamera.Constants.Type.back}
-                flashMode={RNCamera.Constants.FlashMode.auto}
+        {showCamera && (
+          <View style={styles.cameraBox}>
+            <RNCamera
+              ref={this.camera}
+              style={styles.preview}
+              type={RNCamera.Constants.Type.back}
+              flashMode={RNCamera.Constants.FlashMode.auto}
+            />
+            <View style={styles.cameraButton}>
+              <TouchableOpacity
+                onPress={this.takePicture}
+                style={styles.capture}
               />
-              <View style={styles.cameraButton}>
-                <TouchableOpacity
-                  onPress={this.takePicture}
-                  style={styles.capture}
-                />
-              </View>
             </View>
-          )}
+          </View>
+        )}
       </Container>
     )
   }
@@ -421,7 +369,7 @@ class CollectForm extends React.Component<Props, State> {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: common.colors.dark
+    backgroundColor: common.colors.dark,
   },
   activityIndicator: {
     marginTop: 10,
@@ -432,7 +380,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginLeft: 10,
     marginBottom: 20,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   input: {
     marginBottom: 20,
@@ -446,21 +394,21 @@ const styles = StyleSheet.create({
   picker: {
     width: '100%',
     height: 65,
-    color: common.colors.white
+    color: common.colors.white,
   },
   pickerItem: {
-    height: 40
+    height: 40,
   },
   button: {
     marginTop: 20,
     marginLeft: 5,
     marginRight: 5,
-    borderRadius: 50
+    borderRadius: 50,
   },
   preview: {
     flex: 1,
     justifyContent: 'flex-end',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   capture: {
     flex: 0,
@@ -473,23 +421,23 @@ const styles = StyleSheet.create({
     padding: 15,
     paddingHorizontal: 20,
     alignSelf: 'center',
-    margin: 20
+    margin: 20,
   },
   imageAttachment: {
     color: common.colors.white,
     marginLeft: 15,
     marginTop: 10,
-    marginBottom: 10
+    marginBottom: 10,
   },
   imageBox: {
     marginLeft: 5,
     flexDirection: 'row',
-    marginBottom: 10
+    marginBottom: 10,
   },
   image: {
     marginLeft: 10,
     width: 100,
-    height: 100
+    height: 100,
   },
   imageText: {
     alignSelf: 'center',
@@ -502,18 +450,18 @@ const styles = StyleSheet.create({
     top: 30,
     left: 30,
     bottom: 30,
-    right: 30
+    right: 30,
   },
   cameraBox: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: 'black'
+    backgroundColor: 'black',
   },
   cameraButton: {
     flex: 0,
     flexDirection: 'row',
-    justifyContent: 'center'
-  }
+    justifyContent: 'center',
+  },
 })
 
 export default CollectForm

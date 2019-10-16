@@ -4,26 +4,25 @@
  */
 
 import React from 'react'
-import { TouchableHighlight, StyleSheet } from 'react-native'
+import {TouchableHighlight, StyleSheet} from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import common from '../../util/common'
 
 type Props = {
-    icon: string,
-    style?: Object,
-    onPress: () => void
+  icon: string,
+  style?: Object,
+  onPress: () => void,
 }
 
 const FloatButton = (props: Props) => {
-  const { onPress, style, icon } = props
+  const {onPress, style, icon} = props
   return (
     <TouchableHighlight
       onPress={onPress}
       style={[styles.button, style]}
-      underlayColor={common.colors.lightGray}
-    >
+      underlayColor={common.colors.lightGray}>
       <Icon
-                // $FlowFixMe
+        // $FlowFixMe
         name={icon}
         size={20}
         color={common.colors.white}
@@ -34,7 +33,7 @@ const FloatButton = (props: Props) => {
 }
 
 FloatButton.defaultProps = {
-  style: {}
+  style: {},
 }
 
 const styles = StyleSheet.create({
@@ -49,11 +48,11 @@ const styles = StyleSheet.create({
     backgroundColor: common.colors.green,
     width: 50,
     height: 50,
-    borderRadius: 50
+    borderRadius: 50,
   },
   icon: {
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+  },
 })
 
 export default FloatButton

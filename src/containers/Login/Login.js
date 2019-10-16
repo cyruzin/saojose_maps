@@ -4,33 +4,25 @@
  */
 
 import React from 'react'
-import {
-  StyleSheet,
-  View,
-  Image
-} from 'react-native'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
+import {StyleSheet, View, Image} from 'react-native'
+import {bindActionCreators} from 'redux'
+import {connect} from 'react-redux'
 
 import AsyncStorage from '@react-native-community/async-storage'
-import { Actions } from 'react-native-router-flux'
+import {Actions} from 'react-native-router-flux'
 import jwtDecode from 'jwt-decode'
 
-import { checkAuthentication } from '../../redux/ducks/authentication'
+import {checkAuthentication} from '../../redux/ducks/authentication'
 import common from '../../util/common'
 
-import type { State, Props } from '../../types/Login'
+import type {State, Props} from '../../types/Login'
 
-import {
-  Container,
-  TextInput,
-  Button,
-  Text
-} from '../../components/UI'
+import {Container, TextInput, Button, Text} from '../../components/UI'
 
 import Logo from '../../assets/icon.png'
 
 class Login extends React.Component<Props, State> {
+  opacityTime: TimeoutID
   constructor(props: Props) {
     super(props)
 
@@ -42,14 +34,13 @@ class Login extends React.Component<Props, State> {
   }
 
   componentDidMount(): void {
-    // $FlowFixMe
     this.opacityTime = setTimeout(() => {
-      this.setState({ opacity: 100 })
+      this.setState({opacity: 100})
     }, 300)
   }
 
   componentDidUpdate(): void {
-    const { authentication } = this.props
+    const {authentication} = this.props
     if (authentication.authorized) {
       const userData = jwtDecode(authentication.token)
 
@@ -58,37 +49,36 @@ class Login extends React.Component<Props, State> {
         JSON.stringify({
           ...authentication,
           userData,
-        })
+        }),
       )
       Actions.reset('drawerMenu')
     }
   }
 
   componentWillUnmount(): void {
-    // $FlowFixMe
     if (this.opacityTime) {
       clearTimeout(this.opacityTime)
     }
   }
 
   checkAuthentication = (): void => {
-    const { login, password } = this.state
-    const { actions } = this.props
+    const {login, password} = this.state
+    const {actions} = this.props
     const credentials = {
       login: login.trim(),
       password: password.trim(),
     }
     actions.checkAuthentication(credentials)
-  };
+  }
 
   render() {
-    const { authentication } = this.props
-    const { opacity } = this.state
-    const { fetch, error } = authentication
+    const {authentication} = this.props
+    const {opacity} = this.state
+    const {fetch, error} = authentication
 
     return (
       <Container style={styles.container}>
-        <View style={{ ...styles.inputBox, opacity }}>
+        <View style={{...styles.inputBox, opacity}}>
           <View style={styles.imageBox}>
             <Image style={styles.image} source={Logo} />
             <Text style={styles.title}>SÃO JOSÉ MAPAS</Text>
@@ -97,7 +87,7 @@ class Login extends React.Component<Props, State> {
           {!!error && <Text style={styles.errorMsg}>{error}</Text>}
 
           <TextInput
-            onChangeText={(login) => this.setState({ login })}
+            onChangeText={login => this.setState({login})}
             placeholder="Usuário"
             placeholderTextColor={common.colors.lightGray}
             selectionColor={common.colors.green}
@@ -106,7 +96,7 @@ class Login extends React.Component<Props, State> {
           />
 
           <TextInput
-            onChangeText={(password) => this.setState({ password })}
+            onChangeText={password => this.setState({password})}
             placeholder="Senha"
             placeholderTextColor={common.colors.lightGray}
             selectionColor={common.colors.green}
@@ -145,7 +135,7 @@ const styles = StyleSheet.create({
   },
   inputBox: {
     flex: 1,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   input: {
     marginBottom: 20,
@@ -154,7 +144,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
-    paddingLeft: 15
+    paddingLeft: 15,
   },
   button: {
     marginTop: 30,
@@ -171,20 +161,20 @@ const styles = StyleSheet.create({
   },
 })
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   authentication: state.authentication,
 })
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators(
     {
       checkAuthentication,
     },
-    dispatch
+    dispatch,
   ),
 })
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(Login)

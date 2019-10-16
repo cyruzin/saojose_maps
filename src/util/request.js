@@ -1,41 +1,39 @@
 // @flow
 
 import AsyncStorage from '@react-native-community/async-storage'
-import { AUTH_URL, BASE_URL } from './constants'
-
+import {AUTH_URL, BASE_URL} from './constants'
 
 // For authentication requests.
-export function httpRequestAuthetication({ body }: Object): Promise<any> {
-  return new Promise((resolve, reject) => {
+export const httpRequestAuthetication = ({body}: Object): Promise<any> =>
+  new Promise((resolve, reject) =>
     fetch(AUTH_URL, {
       method: 'POST',
       body: JSON.stringify(body),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Basic'
-      }
+        Authorization: 'Basic',
+      },
     })
       .then(parseJSON)
-      .then((response) => {
-        if (!response.ok) return reject(response.json.data)
-        return resolve(response.json.data)
-      })
-      .catch((error) => reject(error.message))
-  })
-}
+      .then(response =>
+        response.ok ? resolve(response.json.data) : reject(response.json.data),
+      )
+      .catch(error => reject(error.message)),
+  )
 
 // For generic requests.
 export async function httpRequest(
-  url: string, {
+  url: string,
+  {
     method,
     body,
-    headers
+    headers,
   }: {
     method: string,
     body?: Object,
-    headers?: Object
-  }
-): any {
+    headers?: Object,
+  },
+): Promise<any> {
   try {
     const localData: string = await AsyncStorage.getItem('token')
     const data: any = JSON.parse(localData)
@@ -47,27 +45,29 @@ export async function httpRequest(
         headers: {
           Accept: 'application/json',
           Authorization: `Bearer ${data.token}`,
-          ...headers
-        }
+          ...headers,
+        },
       })
         .then(parseJSON)
-        .then((response) => {
+        .then(response => {
           if (!response.ok) return reject(response.json.data)
           return resolve(response.json.data)
         })
-        .catch((error) => reject(error.message))
+        .catch(error => reject(error))
     })
   } catch (error) {
-    return error
+    return error.message
   }
 }
 
 // Transform response to JSON.
-function parseJSON(response: Object): Promise<any> {
-  return new Promise((resolve) => response.json()
-    .then((json) => resolve({
-      status: response.status,
-      ok: response.ok,
-      json,
-    })))
-}
+const parseJSON = (response: Object): Promise<any> =>
+  new Promise(resolve =>
+    response.json().then(json =>
+      resolve({
+        status: response.status,
+        ok: response.ok,
+        json,
+      }),
+    ),
+  )

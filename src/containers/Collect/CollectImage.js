@@ -4,41 +4,39 @@
  */
 
 import React from 'react'
-import {
-  Image,
-  StyleSheet,
-  View,
-  ScrollView
-} from 'react-native'
+import {Image, StyleSheet, View, ScrollView} from 'react-native'
 
 import common from '../../util/common'
-import { BASE_URL } from '../../util/constants'
+import {BASE_URL} from '../../util/constants'
 
-import type { Props } from '../../types/Collect/CollectImage'
+import type {Props} from '../../types/Collect/CollectImage'
 
-import { Container, Text } from '../../components/UI'
+import {Container, Text} from '../../components/UI'
 
 export default function CollectImage(props: Props) {
-  const {
-    collectID, img1, img2, img3
-  } = props
+  const {collectID, img1, img2, img3} = props
   return (
     <Container style={styles.container}>
       <ScrollView>
         <View style={styles.imageBox}>
-          <Text style={styles.title}>
-Coleta #
-            {collectID}
-            {' '}
-- Imagens
-          </Text>
-          {img1 && <Image style={styles.image} source={{ uri: `${BASE_URL}/${img1}` }} />}
+          <Text style={styles.title}>Coleta #{collectID} - Imagens</Text>
+          {img1 && (
+            <Image style={styles.image} source={{uri: `${BASE_URL}/${img1}`}} />
+          )}
 
-          {img2 && <Image style={styles.image} source={{ uri: `${BASE_URL}/${img2}` }} />}
+          {img2 && (
+            <Image style={styles.image} source={{uri: `${BASE_URL}/${img2}`}} />
+          )}
 
-          {img3 && <Image style={styles.image} source={{ uri: `${BASE_URL}/${img3}` }} />}
+          {img3 && (
+            <Image style={styles.image} source={{uri: `${BASE_URL}/${img3}`}} />
+          )}
 
-          {!img1 && !img2 && !img3 && <Text style={styles.noResults}>Não existem imagens para esta coleta</Text>}
+          {!img1 && !img2 && !img3 && (
+            <Text style={styles.noResults}>
+              Não existem imagens para esta coleta
+            </Text>
+          )}
         </View>
       </ScrollView>
     </Container>
@@ -48,28 +46,28 @@ Coleta #
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    backgroundColor: common.colors.dark
+    backgroundColor: common.colors.dark,
   },
   title: {
     color: common.colors.white,
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10
+    marginBottom: 10,
   },
   imageBox: {
     flex: 1,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   image: {
     width: 400,
     height: 400,
     marginTop: 5,
-    marginBottom: 20
+    marginBottom: 20,
   },
   noResults: {
     fontSize: 18,
     textAlign: 'center',
     fontWeight: 'bold',
-    color: common.colors.white
-  }
+    color: common.colors.white,
+  },
 })
